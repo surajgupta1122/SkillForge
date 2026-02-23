@@ -5,9 +5,12 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import Users from "./pages/admin/Users";
+import Courses from "./pages/admin/Courses";
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import ViewCourses from "./pages/instructor/InstructorMyCourses";
+import CourseStudents from "./pages/instructor/CourseStudents";
 
 import StudentDashboard from "./pages/student/StudentDashboard";
 import MyCourses from "./pages/student/StudentMyCourses";
@@ -48,6 +51,22 @@ function App() {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/users"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <Users />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/courses"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <Courses />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Instructor Courses */}
         <Route
@@ -63,6 +82,14 @@ function App() {
           element={
             <ProtectedRoute roles={["instructor"]}>
               <ViewCourses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/course/:id/students"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <CourseStudents />
             </ProtectedRoute>
           }
         />

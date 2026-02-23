@@ -11,31 +11,19 @@ import {
 const router = express.Router();
 
 // Get all approved courses
-router.get(
-  "/courses",
-  verifyToken, 
-  allowRoles("student"), 
-  getAllCourses);
+router.get("/courses", verifyToken, allowRoles("student"), getAllCourses);
 
 // Enroll in a course
-router.post(
-  "/enroll", 
-  verifyToken, 
-  allowRoles("student"), 
-  enrollCourse);
+router.post("/enroll", verifyToken, allowRoles("student"), enrollCourse);
 
 // Get enrolled courses for the student
 router.get(
   "/today-courses",
   verifyToken,
   allowRoles("student"),
-  getTodayEnrollments
+  getTodayEnrollments,
 );
-// my enrolled courses 
-router.get(
-  "/my-courses", 
-  verifyToken, 
-  allowRoles("student"),
-  getMyEnrollments);
+// my enrolled courses
+router.get("/my-courses", verifyToken, allowRoles("student"), getMyEnrollments);
 
 export default router;

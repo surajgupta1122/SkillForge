@@ -9,37 +9,76 @@ export default function AdminSidebar() {
     navigate("/");
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <aside className="w-64 bg-green-600 text-white p-6">
-      <h2 className="text-2xl font-bold mb-8">Admin Panel</h2>
+    <aside className="w-64 h-screen bg-green-600 text-white flex flex-col justify-between">
+      {/* 🔥 Top */}
+      <div>
+        {/* Logo */}
+        <div className="p-6 border-b border-green-500">
+          <h2 className="text-2xl font-bold">Admin Panel</h2>
+          <p className="text-xs text-green-200 mt-1">Management System</p>
+        </div>
 
-      <ul className="space-y-4 text-xl">
-        <li
-          onClick={() => navigate("/admin")}
-          className={`p-2 rounded-lg cursor-pointer ${
-            location.pathname === "/admin"
-              ? "bg-blue-500"
-              : "hover:bg-blue-400"
-          }`}
-        >
-          Dashboard
-        </li>
+        {/* Menu */}
+        <ul className="p-4 space-y-2 text-sm">
+          <li
+            onClick={() => navigate("/admin")}
+            className={`px-4 py-2 rounded-lg cursor-pointer transition ${
+              isActive("/admin")
+                ? "bg-white text-green-600 font-semibold"
+                : "hover:bg-green-500"
+            }`}
+          >
+            Dashboard
+          </li>
 
-        <li className="hover:bg-blue-400 p-2 rounded-lg cursor-pointer">
-          Users
-        </li>
+          <li
+            onClick={() => navigate("/admin/users")}
+            className={`px-4 py-2 rounded-lg cursor-pointer transition ${
+              isActive("/admin/users")
+                ? "bg-white text-green-600 font-semibold"
+                : "hover:bg-green-500"
+            }`}
+          >
+            Users
+          </li>
 
-        <li className="hover:bg-blue-400 p-2 rounded-lg cursor-pointer">
-          Courses
-        </li>
+          <li
+            onClick={() => navigate("/admin/courses")}
+            className={`px-4 py-2 rounded-lg cursor-pointer transition ${
+              isActive("/admin/courses")
+                ? "bg-white text-green-600 font-semibold"
+                : "hover:bg-green-500"
+            }`}
+          >
+            Courses
+          </li>
+        </ul>
+      </div>
 
-        <li
+      {/* 🔥 Bottom */}
+      <div className="p-4 border-t border-green-500">
+        {/* Profile */}
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center font-bold">
+            A
+          </div>
+          <div>
+            <p className="text-sm font-semibold">Admin</p>
+            <p className="text-xs text-green-200">admin@gmail.com</p>
+          </div>
+        </div>
+
+        {/* Logout */}
+        <button
           onClick={logout}
-          className="hover:bg-red-500 p-2 rounded-lg cursor-pointer"
+          className="w-full py-2 rounded-lg bg-green-700 hover:bg-green-800 transition"
         >
           Logout
-        </li>
-      </ul>
+        </button>
+      </div>
     </aside>
   );
 }

@@ -2,8 +2,10 @@ import express from "express";
 import { verifyToken } from "../middleware/authMiddleware.js";
 import { allowRoles } from "../middleware/roleMiddleware.js";
 import {
+  deleteCourse,
   createCourse,
   getMyCourses,
+  getCourseStudents,
 } from "../controllers/instructor/courseController.js";
 
 const router = express.Router();
@@ -13,15 +15,23 @@ router.post(
   "/create-course",
   verifyToken,
   allowRoles("instructor"),
-  createCourse
+  createCourse,
 );
 
 // ✅ GET instructor courses (THIS WAS MISSING)
+router.get("/my-courses", verifyToken, allowRoles("instructor"), getMyCourses);
+
 router.get(
-  "/my-courses",
+  "/course/:id/students",
   verifyToken,
   allowRoles("instructor"),
-  getMyCourses
+  getCourseStudents,
 );
 
+router.delete(
+  "/course/:id",
+  verifyToken,
+  allowRoles("instructor"),
+  deleteCourse,
+);
 export default router;

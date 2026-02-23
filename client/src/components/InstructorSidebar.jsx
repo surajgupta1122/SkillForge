@@ -4,45 +4,72 @@ export default function InstructorSidebar() {
   const navigate = useNavigate();
   const location = useLocation();
 
+  const user = JSON.parse(localStorage.getItem("user"));
+
   const logout = () => {
     localStorage.clear();
     navigate("/");
   };
 
+  const isActive = (path) => location.pathname === path;
+
   return (
-    <aside className="w-64 bg-green-600 text-white p-6">
-      <h2 className="text-2xl font-bold mb-8">Instructor Panel</h2>
+    <aside className="w-64 bg-green-600 text-white flex flex-col justify-between">
+      {/* Top */}
+      <div>
+        <div className="p-6 border-b border-green-500">
+          <h2 className="text-2xl font-bold">Instructor Panel</h2>
+        </div>
 
-      <ul className="space-y-4 text-xl">
-        <li
-          onClick={() => navigate("/instructor")}
-          className={`p-2 rounded-lg cursor-pointer ${
-            location.pathname === "/instructor"
-              ? "bg-blue-500"
-              : "hover:bg-blue-400"
-          }`}
-        >
-          Dashboard
-        </li>
+        <ul className="p-4 space-y-2 text-sm">
+          <li
+            onClick={() => navigate("/instructor")}
+            className={`px-4 py-2 rounded-lg cursor-pointer ${
+              isActive("/instructor")
+                ? "bg-white text-green-600 font-semibold"
+                : "hover:bg-green-500"
+            }`}
+          >
+            Dashboard
+          </li>
 
-        <li
-          onClick={() => navigate("/instructor/courses")}
-          className={`p-2 rounded-lg cursor-pointer ${
-            location.pathname === "/instructor/courses"
-              ? "bg-blue-500"
-              : "hover:bg-blue-400"
-          }`}
-        >
-          My Courses
-        </li>
+          <li
+            onClick={() => navigate("/instructor/courses")}
+            className={`px-4 py-2 rounded-lg cursor-pointer ${
+              isActive("/instructor/courses")
+                ? "bg-white text-green-600 font-semibold"
+                : "hover:bg-green-500"
+            }`}
+          >
+            My Courses
+          </li>
+        </ul>
+      </div>
 
-        <li
+      {/* Bottom */}
+      <div className="p-4 border-t border-green-500">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-10 h-10 rounded-full bg-white text-green-600 flex items-center justify-center font-bold">
+            {user?.name?.charAt(0)?.toUpperCase() || "I"}
+          </div>
+
+          <div>
+            <p className="text-sm font-semibold">
+              {user?.name || "Instructor"}
+            </p>
+            <p className="text-xs text-green-200">
+              {user?.email || "No email"}
+            </p>
+          </div>
+        </div>
+
+        <button
           onClick={logout}
-          className="hover:bg-red-500 p-2 rounded-lg cursor-pointer"
+          className="w-full py-2 rounded-lg bg-green-700 hover:bg-green-800"
         >
           Logout
-        </li>
-      </ul>
+        </button>
+      </div>
     </aside>
   );
 }
