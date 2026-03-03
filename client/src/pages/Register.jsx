@@ -59,9 +59,9 @@ export default function Register() {
 
   return (
     <div>
-      <Navbar className="fixed top-0 w-full bg-white shadow-lg shadow-green-500" />
+      <Navbar className="fixed top-0 w-full bg-white shadow-lg shadow-[#418647]"/>
 
-      <div className="py-[3.3%] flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-200">
+      <div className="py-[4%] flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-200">
 
         {/* MAIN CARD */}
         <div className="w-full max-w-3xl bg-white rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2">

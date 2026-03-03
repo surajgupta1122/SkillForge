@@ -1,9 +1,13 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
+import Layout from "./components/Layout";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
-import Home from "./pages/Home";
 import ProtectedRoute from "./routes/ProtectedRoute";
+
+import Home from "./pages/guest/Home";
+import About from "./pages/guest/About";
+import Contact from "./pages/guest/Contact";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
@@ -20,10 +24,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        <Route element={<Layout />}>
         {/* Public routes */}
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
+        <Route path="/contact" element={<Contact />} />
+
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        
+        </Route>
 
         {/* Student */}
         <Route

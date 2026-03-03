@@ -79,10 +79,10 @@ export default function Login() {
   return (
     <div>
       {/* Navbar (unchanged) */}
-      <Navbar className="fixed top-0 w-full bg-white shadow-lg shadow-green-500" />
+      <Navbar className="fixed top-0 w-full bg-white shadow-lg shadow-[#418647]" />
 
       {/* Background */}
-      <div className="py-[6%] flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-200 px-4">
+      <div className="py-[7%] flex items-center justify-center bg-gradient-to-br from-gray-300 to-gray-200 px-4">
 
         {/* MAIN CARD */}
         <div className="w-full max-w-3xl py-2 bg-white rounded-2xl shadow-2xl overflow-hidden grid md:grid-cols-2">
