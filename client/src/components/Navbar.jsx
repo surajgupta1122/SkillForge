@@ -77,8 +77,8 @@ export default function Navbar({ className = "" }) {
           </button>
 
           <button
-            onClick={() => navigate("/student")}
-            className={`${activeClass("/student")} hover:text-green-600`}
+            onClick={() => navigate("/courses")}
+            className={`${activeClass("/courses")} hover:text-green-600`}
           >
             Courses
           </button>
@@ -189,7 +189,7 @@ export default function Navbar({ className = "" }) {
           </button>
 
           <button
-            onClick={() => navigate("/student")}
+            onClick={() => navigate("/courses")}
             className="block w-full text-left text-gray-600"
           >
             Courses

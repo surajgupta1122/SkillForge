@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../service/api";
 import Navbar from "../../components/Navbar";
 import {
   BookOpen,
@@ -17,38 +16,40 @@ import {
   Clock,
   Shield,
 } from "lucide-react";
+import {
+  getTrendingCourses,
+  getFeaturedCourses,
+} from "../../data/sampleCourses";
 
 export default function Home() {
   const navigate = useNavigate();
-
-  const [courses, setCourses] = useState([]);
+  const [trendingCourses, setTrendingCourses] = useState([]);
+  const [featuredCourses, setFeaturedCourses] = useState([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  const fetchCourses = async () => {
-    try {
-      const res = await api.get("/student/courses");
-      setCourses(res.data);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchCourses();
+    // Simulate API call
+    setTimeout(() => {
+      setTrendingCourses(getTrendingCourses());
+      setFeaturedCourses(getFeaturedCourses());
+      setLoading(false);
+    }, 1000);
   }, []);
 
-  const filteredCourses = courses.filter((c) =>
-    c.title.toLowerCase().includes(search.toLowerCase()),
-  );
+  const handleSearch = () => {
+    if (search.trim()) {
+      navigate(`/courses?search=${encodeURIComponent(search)}`);
+    } else {
+      navigate("/courses");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
       <Navbar className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50" />
 
-      {/* Hero Section - Custom Gradient */}
+      {/* Hero Section */}
       <div className="relative pt-13 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#03261F] via-[#0A5649] to-[#428746] opacity-90"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
@@ -74,7 +75,7 @@ export default function Home() {
               with industry experts
             </p>
 
-            {/* Search Bar - Modern Design */}
+            {/* Search Bar */}
             <div className="max-w-2xl mx-auto">
               <div className="flex items-center bg-white rounded-2xl p-1 shadow-2xl">
                 <div className="flex-1 flex items-center px-4">
@@ -84,27 +85,45 @@ export default function Home() {
                     placeholder="What do you want to learn today?"
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleSearch()}
                     className="w-full p-3 text-gray-800 outline-none bg-transparent"
                   />
                 </div>
                 <button
-                  onClick={() => navigate("/student")}
+                  onClick={handleSearch}
                   className="bg-gradient-to-r from-[#03261F] to-[#0A5649] text-white px-8 py-3 rounded-xl hover:from-[#0A5649] hover:to-[#428746] transition-all transform hover:scale-105 font-medium"
                 >
                   Explore
                 </button>
               </div>
 
-              <div className="flex gap-4 mt-6 text-sm text-white/80 justify-center">
+              <div className="flex gap-4 mt-6 text-sm text-white/80 justify-center flex-wrap">
                 <span>Popular:</span>
-                <span className="hover:text-[#CCDE2F] cursor-pointer transition-colors">
+                <span
+                  onClick={() => navigate("/courses?category=Web Development")}
+                  className="hover:text-[#CCDE2F] cursor-pointer transition-colors"
+                >
                   Web Development
                 </span>
-                <span className="hover:text-[#CCDE2F] cursor-pointer transition-colors">
+                <span
+                  onClick={() => navigate("/courses?category=Data Science")}
+                  className="hover:text-[#CCDE2F] cursor-pointer transition-colors"
+                >
                   Data Science
                 </span>
-                <span className="hover:text-[#CCDE2F] cursor-pointer transition-colors">
+                <span
+                  onClick={() =>
+                    navigate("/courses?category=Artificial Intelligence")
+                  }
+                  className="hover:text-[#CCDE2F] cursor-pointer transition-colors"
+                >
                   AI & ML
+                </span>
+                <span
+                  onClick={() => navigate("/courses?category=Cloud Computing")}
+                  className="hover:text-[#CCDE2F] cursor-pointer transition-colors"
+                >
+                  Cloud
                 </span>
               </div>
             </div>
@@ -126,7 +145,7 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Stats Section - Modern Cards */}
+      {/* Stats Section */}
       <div className="max-w-7xl mx-auto px-6 -mt-10 relative z-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
           {[
@@ -177,8 +196,8 @@ export default function Home() {
       {/* Categories Section */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            Explore Top Categories
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+            Explore Top <span className="text-[#0A5649]">Categories</span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Discover courses in various categories taught by industry experts
@@ -238,6 +257,9 @@ export default function Home() {
           ].map((cat) => (
             <div
               key={cat.name}
+              onClick={() =>
+                navigate(`/courses?category=${encodeURIComponent(cat.name)}`)
+              }
               className="group relative bg-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer overflow-hidden"
             >
               <div
@@ -256,20 +278,21 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Featured Courses */}
+      {/* Trending Courses */}
       <div className="bg-gray-50 py-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex justify-between items-center mb-12">
             <div>
-              <h2 className="text-3xl font-bold text-gray-800 mb-2">
-                Featured Courses
-              </h2>
-              <p className="text-gray-600">
-                Most popular courses loved by our students
-              </p>
+              <div className="flex items-center gap-2 mb-2">
+                <TrendingUp className="w-6 h-6 text-[#0A5649]" />
+                <h2 className="text-3xl font-bold text-gray-800">
+                  Trending <span className="text-[#0A5649]">Courses</span>
+                </h2>
+              </div>
+              <p className="text-gray-600">Most popular courses right now</p>
             </div>
             <button
-              onClick={() => navigate("/student")}
+              onClick={() => navigate("/courses")}
               className="text-[#0A5649] font-semibold hover:text-[#03261F] flex items-center gap-2 transition-colors"
             >
               View all courses <ChevronRight className="w-4 h-4" />
@@ -287,62 +310,75 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          ) : filteredCourses.length === 0 ? (
-            <div className="bg-white rounded-2xl p-12 text-center shadow-lg">
-              <BookOpen className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-              <p className="text-xl text-gray-600">No courses found</p>
-            </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {filteredCourses.slice(0, 6).map((course) => (
+              {trendingCourses.slice(0, 3).map((course) => (
                 <div
                   key={course.id}
-                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 overflow-hidden"
+                  className="group bg-white rounded-2xl shadow-lg hover:shadow-2xl transition-all transform hover:-translate-y-2 overflow-hidden cursor-pointer"
+                  onClick={() => navigate(`/course/${course.id}`)}
                 >
-                  <div className="h-48 bg-gradient-to-br from-[#03261F] via-[#0A5649] to-[#428746] relative">
+                  <div className="h-48 relative overflow-hidden">
+                    <img
+                      src={course.image}
+                      alt={course.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
                     <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors"></div>
                     <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold text-[#0A5649]">
                       ₹ {course.price}
                     </div>
+                    {course.trending && (
+                      <div className="absolute top-4 left-4 bg-[#CCDE2F] text-[#03261F] px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1">
+                        <TrendingUp className="w-3 h-3" />
+                        Trending
+                      </div>
+                    )}
                   </div>
 
                   <div className="p-6">
                     <div className="flex items-center gap-2 mb-3">
                       <div className="flex items-center gap-1">
-                        <Star className="w-4 h-4 fill-[#CCDE2F] text-[#CCDE2F]" />
-                        <Star className="w-4 h-4 fill-[#CCDE2F] text-[#CCDE2F]" />
-                        <Star className="w-4 h-4 fill-[#CCDE2F] text-[#CCDE2F]" />
-                        <Star className="w-4 h-4 fill-[#CCDE2F] text-[#CCDE2F]" />
-                        <Star className="w-4 h-4 fill-[#CCDE2F] text-[#CCDE2F]" />
+                        {[1, 2, 3, 4, 5].map((star) => (
+                          <Star
+                            key={star}
+                            className={`w-4 h-4 ${
+                              star <= Math.floor(course.rating)
+                                ? "fill-[#CCDE2F] text-[#CCDE2F]"
+                                : star <= course.rating
+                                  ? "fill-[#CCDE2F] text-[#CCDE2F] opacity-50"
+                                  : "text-gray-300"
+                            }`}
+                          />
+                        ))}
                       </div>
-                      <span className="text-sm text-gray-500">(4.9)</span>
+                      <span className="text-sm text-gray-500">
+                        ({course.reviews})
+                      </span>
                     </div>
 
-                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-[#0A5649] transition-colors">
+                    <h3 className="text-xl font-bold text-gray-800 mb-2 group-hover:text-[#0A5649] transition-colors line-clamp-1">
                       {course.title}
                     </h3>
 
                     <p className="text-gray-600 mb-4 line-clamp-2">
-                      {course.description ||
-                        "Master the fundamentals and advance your career with this comprehensive course"}
+                      {course.description}
                     </p>
 
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <div className="w-8 h-8 bg-gradient-to-br from-[#03261F] to-[#0A5649] rounded-full flex items-center justify-center text-white text-sm font-bold">
-                          {course.instructor?.charAt(0) || "T"}
+                          {course.instructor.charAt(0)}
                         </div>
-                        <span className="text-sm text-gray-600">
-                          {course.instructor || "Expert Instructor"}
+                        <span className="text-sm text-gray-600 line-clamp-1">
+                          {course.instructor}
                         </span>
                       </div>
 
-                      <button
-                        onClick={() => navigate(`/course/${course.id}`)}
-                        className="bg-gradient-to-r from-[#0A5649] to-[#428746] text-white px-4 py-2 rounded-xl hover:from-[#03261F] hover:to-[#0A5649] transition-all transform hover:scale-105 text-sm font-medium"
-                      >
-                        Enroll Now
-                      </button>
+                      <div className="flex items-center gap-1 text-sm text-gray-500">
+                        <Users className="w-4 h-4" />
+                        {course.students.toLocaleString()}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -355,8 +391,8 @@ export default function Home() {
       {/* Why Choose Us */}
       <div className="max-w-7xl mx-auto px-6 py-20">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-800 mb-4">
-            Why Choose SkillForge?
+          <h2 className="text-4xl font-bold text-gray-800 mb-4">
+            Why Choose <span className="text-[#0A5649]">SkillForge?</span>
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             We provide the best learning experience with industry experts and
@@ -370,21 +406,18 @@ export default function Home() {
               icon: Users,
               title: "Expert Instructors",
               desc: "Learn from industry professionals with years of experience",
-              color: "from-[#03261F] to-[#0A5649]",
               bg: "bg-[#0A5649]/10",
             },
             {
               icon: Clock,
               title: "Flexible Learning",
               desc: "Access courses anytime, anywhere at your own pace",
-              color: "from-[#0A5649] to-[#428746]",
               bg: "bg-[#428746]/10",
             },
             {
               icon: Award,
               title: "Industry Certification",
               desc: "Earn certificates recognized by top companies worldwide",
-              color: "from-[#428746] to-[#CCDE2F]",
               bg: "bg-[#CCDE2F]/10",
             },
           ].map((item) => (
@@ -418,7 +451,7 @@ export default function Home() {
             Join thousands of students who have already transformed their
             careers with SkillForge
           </p>
-          <div className="flex gap-4 justify-center">
+          <div className="flex gap-4 justify-center flex-wrap">
             <button
               onClick={() => navigate("/register")}
               className="bg-[#CCDE2F] text-[#03261F] px-8 py-4 rounded-xl font-semibold hover:bg-[#CCDE2F]/90 transition-all transform hover:scale-105 shadow-xl flex items-center gap-2"
@@ -426,7 +459,7 @@ export default function Home() {
               Get Started Free <Rocket className="w-5 h-5" />
             </button>
             <button
-              onClick={() => navigate("/student")}
+              onClick={() => navigate("/courses")}
               className="bg-transparent border-2 border-white text-white px-8 py-4 rounded-xl font-semibold hover:bg-white/10 transition-all transform hover:scale-105"
             >
               Browse Courses

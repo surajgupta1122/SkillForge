@@ -6,12 +6,13 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/guest/Home";
+import GuestCourses from "./pages/guest/Courses";  // Renamed to GuestCourses
 import About from "./pages/guest/About";
 import Contact from "./pages/guest/Contact";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
-import Courses from "./pages/admin/Courses";
+import AdminCourses from "./pages/admin/Courses";  // Renamed to AdminCourses
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import ViewCourses from "./pages/instructor/InstructorMyCourses";
@@ -25,14 +26,14 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-        {/* Public routes */}
-        <Route path="/" element={<Home />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
+          {/* Public routes */}
+          <Route path="/" element={<Home />} />
+          <Route path="/courses" element={<GuestCourses />} />  {/* Updated */}
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
 
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Route>
 
         {/* Student */}
@@ -74,7 +75,7 @@ function App() {
           path="/admin/courses"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <Courses />
+              <AdminCourses />  {/* Updated */}
             </ProtectedRoute>
           }
         />
