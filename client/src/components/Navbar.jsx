@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Logo from "../assets/logo.png";
+import { User, LayoutDashboard, LogOut } from "lucide-react";
 
 export default function Navbar({ className = "" }) {
   const navigate = useNavigate();
@@ -142,12 +143,13 @@ export default function Navbar({ className = "" }) {
 
               {/* Dropdown */}
               {dropdownOpen && (
-                <div className="absolute right-0 mt-3 w-48 bg-white border rounded-lg shadow-lg py-2 z-50">
+                <div className="absolute right-0 w-48 bg-white border rounded-lg shadow-lg overflow-hidden">
                   <button
                     onClick={() => navigate("/profile")}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 hover:bg-gray-100 transition"
                   >
-                    Profile
+                    <User className="w-4 h-4 text-gray-500" />
+                    <span>Profile</span>
                   </button>
 
                   {/* Role-based Dashboard */}
@@ -163,25 +165,20 @@ export default function Navbar({ className = "" }) {
                         navigate("/dashboard"); // fallback
                       }
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 hover:bg-gray-100 transition"
                   >
-                    Dashboard
+                    <LayoutDashboard className="w-4 h-4 text-gray-500" />
+                    <span>Dashboard</span>
                   </button>
 
-                  <button
-                    onClick={() => navigate("/settings")}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
-                  >
-                    Settings
-                  </button>
-
-                  <hr className="my-2" />
+                  <div className="border-t border-gray-200 my-1"></div>
 
                   <button
                     onClick={handleLogout}
-                    className="block w-full text-left px-4 py-2 text-red-500 hover:bg-gray-100"
+                    className="flex items-center gap-3 w-full text-left px-4 py-3 text-red-500 hover:bg-red-50 transition"
                   >
-                    Logout
+                    <LogOut className="w-4 h-4" />
+                    <span>Logout</span>
                   </button>
                 </div>
               )}
