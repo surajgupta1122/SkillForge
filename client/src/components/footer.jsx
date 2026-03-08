@@ -61,7 +61,7 @@ export default function Footer() {
             <ul className="space-y-3">
               {[
                 { name: "Home", path: "/" },
-                { name: "Courses", path: "/student" },
+                { name: "Courses", path: "/courses" },
                 { name: "About Us", path: "/about" },
                 { name: "Contact", path: "/contact" },
                 { name: "FAQ", path: "/faq" },
@@ -92,7 +92,7 @@ export default function Footer() {
               ].map((category) => (
                 <li key={category}>
                   <button
-                    onClick={() => navigate("/student")}
+                    onClick={() => navigate(`/courses?category=${encodeURIComponent(category)}`)}
                     className="text-gray-600 hover:text-[#0A5649] transition-colors"
                   >
                     {category}
@@ -107,15 +107,18 @@ export default function Footer() {
             <h3 className="font-bold text-gray-800 mb-4">Support</h3>
             <ul className="space-y-3">
               {[
-                "Help Center",
-                "Terms of Service",
-                "Privacy Policy",
-                "Cookie Policy",
-                "Accessibility",
+                { name: "Help Center", path: "/help" },
+                { name: "Terms of Service", path: "/terms" },
+                { name: "Privacy Policy", path: "/privacy" },
+                { name: "Cookie Policy", path: "/cookies" },
+                { name: "Accessibility", path: "/accessibility" },
               ].map((item) => (
-                <li key={item}>
-                  <button className="text-gray-600 hover:text-[#0A5649] transition-colors">
-                    {item}
+                <li key={item.name}>
+                  <button
+                    onClick={() => navigate(item.path)}
+                    className="text-gray-600 hover:text-[#0A5649] transition-colors"
+                  >
+                    {item.name}
                   </button>
                 </li>
               ))}
@@ -164,22 +167,22 @@ export default function Footer() {
               {[
                 {
                   icon: Linkedin,
-                  href: "#",
+                  href: "https://linkedin.com/company/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-600",
                 },
                 {
                   icon: Twitter,
-                  href: "#",
+                  href: "https://twitter.com/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-400",
                 },
                 {
                   icon: Facebook,
-                  href: "#",
+                  href: "https://facebook.com/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-600",
                 },
                 {
                   icon: Instagram,
-                  href: "#",
+                  href: "https://instagram.com/skillforge",
                   color: "hover:bg-pink-100 hover:text-pink-600",
                 },
               ].map((social, index) => (

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import  Logo  from "../assets/logo.png";
+import Logo from "../assets/logo.png";
 
 export default function Navbar({ className = "" }) {
   const navigate = useNavigate();
@@ -62,7 +62,7 @@ export default function Navbar({ className = "" }) {
           onClick={() => navigate("/")}
           className="flex text-3xl font-bold text-gray-500 cursor-pointer"
         >
-        <img src={Logo} alt="Logo" className="w-15.5 h-9.4" />
+          <img src={Logo} alt="Logo" className="w-15.5 h-9.4" />
           Ski
           <span className="text-green-600">ll</span>
           Forge
@@ -135,7 +135,9 @@ export default function Navbar({ className = "" }) {
                   {user.name?.charAt(0).toUpperCase()}
                 </div>
 
-                <span className="text-gray-600 text-xl font-medium">{user.name}</span>
+                <span className="text-gray-600 text-xl font-medium">
+                  {user.name}
+                </span>
               </div>
 
               {/* Dropdown */}
@@ -146,6 +148,24 @@ export default function Navbar({ className = "" }) {
                     className="block w-full text-left px-4 py-2 hover:bg-gray-100"
                   >
                     Profile
+                  </button>
+
+                  {/* Role-based Dashboard */}
+                  <button
+                    onClick={() => {
+                      if (user.role === "admin") {
+                        navigate("/admin");
+                      } else if (user.role === "instructor") {
+                        navigate("/instructor");
+                      } else if (user.role === "student") {
+                        navigate("/student");
+                      } else {
+                        navigate("/dashboard"); // fallback
+                      }
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100"
+                  >
+                    Dashboard
                   </button>
 
                   <button
