@@ -124,8 +124,8 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-100 backdrop-blur-md p-1 pr-0">
-      <div className="flex h-[calc(100vh-8px)] overflow-hidden rounded-r-3xl">
+    <div className="min-h-screen bg-gray-100 p-1 pr-0">
+      <div className="flex h-[calc(100vh-8px)] overflow-hidden rounded-3xl">
         <AdminSidebar onLogout={logout} />
 
         <main className="flex-1 overflow-y-auto custom-scroll bg-gray-100">
@@ -145,7 +145,7 @@ export default function AdminDashboard() {
                   <p className="text-gray-500 mt-1 text-lg">Welcome back! Your dashboard is ready</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-sm border border-white/40">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/40">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
                         <CalendarCheck className="w-4 h-4 text-white" />
@@ -170,7 +170,7 @@ export default function AdminDashboard() {
                   if (userRequests > 0) scrollToInstructors();
                   if (courseRequests > 0) scrollToCourses();
                 } : undefined}
-                className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group ${
+                className={`bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group ${
                   totalRequests > 0 ? "cursor-pointer hover:shadow-md hover:scale-[1.02]" : ""
                 }`}
               >
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
               </div>
 
               {/* Today Total Request Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group">
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition">
                     <Clock className="w-6 h-6 text-purple-500" />
@@ -212,7 +212,7 @@ export default function AdminDashboard() {
               {/* Total User Request (Instructors) Card */}
               <div 
                 onClick={userRequests > 0 ? scrollToInstructors : undefined}
-                className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group ${
+                className={`bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group ${
                   userRequests > 0 ? "cursor-pointer hover:shadow-md hover:scale-[1.02]" : ""
                 }`}
               >
@@ -234,7 +234,7 @@ export default function AdminDashboard() {
               {/* Total Courses Request Card */}
               <div 
                 onClick={courseRequests > 0 ? scrollToCourses : undefined}
-                className={`bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group ${
+                className={`bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group ${
                   courseRequests > 0 ? "cursor-pointer hover:shadow-md hover:scale-[1.02]" : ""
                 }`}
               >
@@ -255,7 +255,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* ==================== INSTRUCTOR SECTION with Search ==================== */}
-            <div ref={instructorSectionRef} className="bg-green-50 rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden scroll-mt-20">
+            <div ref={instructorSectionRef} className="bg-green-50 rounded-2xl shadow-md border border-gray-100 mb-8 overflow-hidden scroll-mt-20">
               <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -364,7 +364,7 @@ export default function AdminDashboard() {
             </div>
 
             {/* ==================== COURSE SECTION with Search ==================== */}
-            <div ref={courseSectionRef} className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden scroll-mt-20">
+            <div ref={courseSectionRef} className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden scroll-mt-20">
               <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 bg-green-50">
                 <div>
                   <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">

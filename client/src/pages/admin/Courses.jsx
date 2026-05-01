@@ -66,8 +66,8 @@ export default function Courses() {
   };
 
   return (
-    <div className="min-h-screen bg-blue-100 backdrop-blur-md p-1 pr-0">
-      <div className="flex h-[calc(100vh-8px)] overflow-hidden rounded-r-3xl">
+    <div className="min-h-screen bg-gray-100 p-1 pr-0">
+      <div className="flex h-[calc(100vh-8px)] overflow-hidden rounded-3xl">
         <AdminSidebar onLogout={logout} />
 
         <main className="flex-1 overflow-y-auto custom-scroll bg-gray-100">
@@ -87,7 +87,7 @@ export default function Courses() {
                   <p className="text-gray-500 mt-1 text-lg">Manage all courses in the system</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-sm border border-white/40">
+                  <div className="bg-white/60 backdrop-blur-sm rounded-2xl px-4 py-2 shadow-lg border border-white/40">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-400 to-emerald-500 flex items-center justify-center">
                         <CalendarCheck className="w-4 h-4 text-white" />
@@ -107,7 +107,7 @@ export default function Courses() {
             {/* ==================== STATS CARDS ==================== */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
               {/* Total Courses Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
                     <BookOpen className="w-6 h-6 text-blue-500" />
@@ -119,7 +119,7 @@ export default function Courses() {
               </div>
 
               {/* Approved Courses Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition">
                     <CheckCircle className="w-6 h-6 text-green-500" />
@@ -131,7 +131,7 @@ export default function Courses() {
               </div>
 
               {/* Pending Courses Card */}
-              <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
+              <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center group-hover:bg-yellow-100 transition">
                     <Clock className="w-6 h-6 text-yellow-500" />
@@ -144,7 +144,7 @@ export default function Courses() {
             </div>
 
             {/* ==================== SEARCH SECTION ==================== */}
-            <div className="bg-green-50 rounded-2xl shadow-sm border border-gray-100 mb-8 overflow-hidden">
+            <div className="bg-green-50 rounded-2xl shadow-md border border-gray-100 mb-8 overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div>
                   <h2 className="text-lg font-bold text-gray-800 flex items-center gap-2">
@@ -181,7 +181,7 @@ export default function Courses() {
             </div>
 
             {/* ==================== COURSES TABLE ==================== */}
-            <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            <div className="bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden">
               {loading ? (
                 <div className="flex justify-center items-center py-16">
                   <div className="animate-spin rounded-full h-10 w-10 border-3 border-blue-500 border-t-transparent"></div>
