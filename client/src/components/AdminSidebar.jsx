@@ -1,10 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import { Home, 
-  LayoutDashboard, 
-  Users, 
-  BookOpen,
-  LogOut
- } from "lucide-react";
+import { Home, LayoutDashboard, Users, BookOpen, LogOut } from "lucide-react";
 
 export default function AdminSidebar() {
   const navigate = useNavigate();
@@ -18,7 +13,7 @@ export default function AdminSidebar() {
   const isActive = (path) => location.pathname === path;
 
   return (
-    <aside className="w-66 h-screen bg-green-600 text-white flex flex-col justify-between border-r-2 border-white">
+    <aside className="w-64 h-screen bg-green-600 text-white flex flex-col justify-between overflow-hidden rounded-l-3xl">
       {/* 🔥 Top */}
       <div>
         {/* Logo */}
@@ -32,10 +27,10 @@ export default function AdminSidebar() {
           {/* Home Button */}
           <li
             onClick={() => navigate("/")}
-            className={`px-4 py-1.5 rounded-lg font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
               isActive("/")
-                ? "bg-white text-green-600"
-                : "hover:bg-white hover:text-green-600"
+                ? "bg-gray-100 text-green-700 shadow-md relative after:absolute after:-right-4 after:top-0 after:h-full after:w-4 after:bg-gray-100 after:content-['']"
+                : "hover:bg-white hover:text-green-800 rounded-2xl"
             }`}
           >
             <Home className="w-5 h-5" />
@@ -45,10 +40,10 @@ export default function AdminSidebar() {
           {/* Dashboard */}
           <li
             onClick={() => navigate("/admin")}
-            className={`px-4 py-1.5 rounded-lg font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
               isActive("/admin")
-                ? "bg-white text-green-600"
-                : "hover:bg-white hover:text-green-600"
+                ? "bg-gray-100 text-green-700 shadow-md relative after:absolute after:-right-4 after:top-0 after:h-full after:w-4 after:bg-gray-100 after:content-['']"
+                : "hover:bg-white hover:text-green-800 rounded-2xl"
             }`}
           >
             <LayoutDashboard className="w-5 h-5" />
@@ -58,10 +53,10 @@ export default function AdminSidebar() {
           {/* Users */}
           <li
             onClick={() => navigate("/admin/users")}
-            className={`px-4 py-1.5 rounded-lg font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
               isActive("/admin/users")
-                ? "bg-white text-green-600"
-                : "hover:bg-white hover:text-green-600"
+                ? "bg-gray-100 text-green-700 shadow-md relative after:absolute after:-right-4 after:top-0 after:h-full after:w-4 after:bg-gray-100 after:content-['']"
+                : "hover:bg-white hover:text-green-800 rounded-2xl"
             }`}
           >
             <Users className="w-5 h-5" />
@@ -71,10 +66,10 @@ export default function AdminSidebar() {
           {/* Courses */}
           <li
             onClick={() => navigate("/admin/courses")}
-            className={`px-4 py-1.5 rounded-lg font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+            className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
               isActive("/admin/courses")
-                ? "bg-white text-green-600"
-                : "hover:bg-white hover:text-green-600"
+                ? "bg-gray-100 text-green-700 shadow-md relative after:absolute after:-right-4 after:top-0 after:h-full after:w-4 after:bg-gray-100 after:content-['']"
+                : "hover:bg-white hover:text-green-800 rounded-2xl"
             }`}
           >
             <BookOpen className="w-5 h-5" />
