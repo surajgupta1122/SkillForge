@@ -28,7 +28,7 @@ export default function InstructorSidebar() {
       {/* 🔥 Top */}
       <div>
         {/* Logo */}
-        <div className="flex items-center gap-2 px-4 py-6 border-b-4 border-blue-500 bg-orange-600">
+        <div className="flex items-center gap-2 px-4 py-6 border-b-4 border-blue-500 bg-gradient-to-br from-orange-500 to-red-600">
           <div>
             <UserCheck className="w-8 h-8 text-white" />
           </div>
@@ -121,7 +121,7 @@ export default function InstructorSidebar() {
       </div>
 
       {/* 🔥 Bottom */}
-      <div className="p-4 border-t-3 border-blue-500 bg-orange-600">
+      <div className="p-4 border-t-3 border-blue-500 bg-gradient-to-br from-orange-600 to-red-500">
         {/* Profile */}
         <div className="flex items-center gap-3 mb-4">
           <div className="w-10 h-10 rounded-full bg-white text-xl text-orange-600 flex items-center justify-center font-bold">
@@ -136,7 +136,7 @@ export default function InstructorSidebar() {
         {/* Logout */}
         <button
           onClick={logout}
-          className="w-full py-1.5 text-lg rounded-lg bg-red-800 hover:bg-red-600 duration-300 transition flex items-center justify-center gap-2"
+          className="w-full py-1.5 text-lg rounded-xl bg-red-800 hover:bg-red-600 duration-300 transition flex items-center justify-center gap-2"
         >
           <LogOut className="w-5 h-5" />
           Logout
