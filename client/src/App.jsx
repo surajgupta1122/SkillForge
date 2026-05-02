@@ -7,16 +7,20 @@ import Profile from "./pages/Profile";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 import Home from "./pages/guest/Home";
-import GuestCourses from "./pages/guest/Courses";  // Renamed to GuestCourses
+import GuestCourses from "./pages/guest/Courses"; // Renamed to GuestCourses
 import About from "./pages/guest/About";
 import Contact from "./pages/guest/Contact";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
-import AdminCourses from "./pages/admin/Courses";  // Renamed to AdminCourses
+import AdminCourses from "./pages/admin/Courses"; // Renamed to AdminCourses
+import AdminSettings from "./pages/admin/AdminSettings"; // New Admin Settings page
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import ViewCourses from "./pages/instructor/InstructorMyCourses";
+import Students from "./pages/instructor/Students";
+import Analytics from "./pages/instructor/Analytics";
+import Settings from "./pages/instructor/Settings";
 import CourseStudents from "./pages/instructor/CourseStudents";
 
 import StudentDashboard from "./pages/student/StudentDashboard";
@@ -29,10 +33,9 @@ function App() {
         <Route element={<Layout />}>
           {/* Public routes */}
           <Route path="/" element={<Home />} />
-          <Route path="/courses" element={<GuestCourses />} />  {/* Updated */}
+          <Route path="/courses" element={<GuestCourses />} /> {/* Updated */}
           <Route path="/about" element={<About />} />
           <Route path="/contact" element={<Contact />} />
-
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Route>
@@ -86,10 +89,18 @@ function App() {
           path="/admin/courses"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <AdminCourses />  {/* Updated */}
+              <AdminCourses /> {/* Updated */}
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/admin/settings"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <AdminSettings /> {/* New Admin Settings route */}
+            </ProtectedRoute>
+          }
+        /> 
 
         {/* Instructor Courses */}
         <Route
@@ -105,6 +116,30 @@ function App() {
           element={
             <ProtectedRoute roles={["instructor"]}>
               <ViewCourses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/students"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <Students />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/analytics"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/settings"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <Settings />
             </ProtectedRoute>
           }
         />

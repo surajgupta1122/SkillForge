@@ -6,6 +6,7 @@ import {
   BookOpen,
   LogOut,
   Shield,
+  Settings,
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -86,6 +87,19 @@ export default function AdminSidebar() {
           >
             <BookOpen className="w-5 h-5" />
             Courses
+          </li>
+
+          {/* Settings */}
+          <li
+            onClick={() => navigate("/admin/settings")}
+            className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+              isActive("/admin/settings")
+                ? "bg-gray-100 text-green-700 border-2 border-r-0 border-green-700 shadow-[0_6px_18px_rgba(34,197,94,0.25)] relative after:absolute after:-right-4 after:top--1 after:h-[110%] after:w-4 after:border-t-2 after:border-b-2 after:bg-gray-100 after:border-green-700 after:content-['']"
+                : "hover:bg-green-100 hover:shadow-lg hover:text-green-700 rounded-2xl"
+            }`}
+          >
+            <Settings className="w-5 h-5" />
+            Settings
           </li>
         </ul>
       </div>
