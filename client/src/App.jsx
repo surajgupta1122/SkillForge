@@ -25,6 +25,9 @@ import CourseStudents from "./pages/instructor/CourseStudents";
 
 import StudentDashboard from "./pages/student/StudentDashboard";
 import MyCourses from "./pages/student/StudentMyCourses";
+import Certificates from "./pages/student/Certificates";
+import Progress from "./pages/student/Progress";
+import StudentSettings from "./pages/student/StudentSettings";
 
 function App() {
   return (
@@ -64,6 +67,30 @@ function App() {
           element={
             <ProtectedRoute roles={["student"]}>
               <MyCourses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/certificates"
+          element={
+            <ProtectedRoute roles={["student"]}>
+              <Certificates />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/progress"
+          element={
+            <ProtectedRoute roles={["student"]}>
+              <Progress />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/settings"
+          element={
+            <ProtectedRoute roles={["student"]}>
+              <StudentSettings />
             </ProtectedRoute>
           }
         />
