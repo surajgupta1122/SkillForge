@@ -14,12 +14,14 @@ import Contact from "./pages/guest/Contact";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import AdminCourses from "./pages/admin/Courses"; // Renamed to AdminCourses
+import AdminMessages from "./pages/admin/AdminMessages";
 import AdminSettings from "./pages/admin/AdminSettings"; // New Admin Settings page
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import ViewCourses from "./pages/instructor/InstructorMyCourses";
 import Students from "./pages/instructor/Students";
 import Analytics from "./pages/instructor/Analytics";
+import InstructorMessages from "./pages/instructor/InstructorMessages";
 import Settings from "./pages/instructor/Settings";
 import CourseStudents from "./pages/instructor/CourseStudents";
 
@@ -27,6 +29,7 @@ import StudentDashboard from "./pages/student/StudentDashboard";
 import MyCourses from "./pages/student/StudentMyCourses";
 import Certificates from "./pages/student/Certificates";
 import Progress from "./pages/student/Progress";
+import StudentMessages from "./pages/student/StudentMessages";
 import StudentSettings from "./pages/student/StudentSettings";
 
 function App() {
@@ -86,6 +89,15 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/student/messages"
+          element={
+            <ProtectedRoute roles={["student"]}>
+              <StudentMessages />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/student/settings"
           element={
@@ -120,14 +132,23 @@ function App() {
             </ProtectedRoute>
           }
         />
+
+        <Route
+          path="/admin/messages"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <AdminMessages />
+            </ProtectedRoute>
+          }
+        /> 
         <Route
           path="/admin/settings"
           element={
             <ProtectedRoute roles={["admin"]}>
-              <AdminSettings /> {/* New Admin Settings route */}
+              <AdminSettings />
             </ProtectedRoute>
           }
-        /> 
+        />
 
         {/* Instructor Courses */}
         <Route
@@ -159,6 +180,14 @@ function App() {
           element={
             <ProtectedRoute roles={["instructor"]}>
               <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/messages"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <InstructorMessages />
             </ProtectedRoute>
           }
         />

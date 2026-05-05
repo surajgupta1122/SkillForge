@@ -128,17 +128,17 @@ export default function StudentSidebar() {
               Certificates
             </li>
 
-            {/* Massage */}
+            {/* Messages */}
             <li
-              onClick={() => navigate("/student/massage")}
+              onClick={() => navigate("/student/messages")}
               className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
-                isActive("/student/massage")
+                isActive("/student/messages")
                   ? "bg-gray-100 text-blue-600 border-2 border-r-0 border-blue-600 shadow-[0_8px_22px_rgba(37,99,235,0.35)] relative after:absolute after:-right-4 after:top--1 after:h-[110%] after:w-4 after:border-t-2 after:border-b-2 after:bg-gray-100 after:border-blue-600 after:content-['']"
                   : "hover:bg-blue-100 hover:shadow-lg hover:text-blue-600 rounded-2xl"
               }`}
             >
               <MessageSquare className="w-5 h-5" />
-              Massage
+              Message
             </li>
 
             {/* Learning Progress */}

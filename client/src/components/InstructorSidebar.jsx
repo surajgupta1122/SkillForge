@@ -139,11 +139,11 @@ export default function InstructorSidebar() {
               Analytics
             </li>
 
-            {/* Massage */}
+            {/* Messages */}
             <li
-              onClick={() => navigate("/instructor/massage")}
+              onClick={() => navigate("/instructor/messages")}
               className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
-                isActive("/instructor/massage")
+                isActive("/instructor/messages")
                   ? "bg-gray-100 text-orange-600 border-2 border-r-0 border-orange-600 shadow-[0_6px_18px_rgba(249,115,22,0.25)] relative after:absolute after:-right-4 after:top--1 after:h-[110%] after:w-4 after:border-t-2 after:border-b-2 after:bg-gray-100 after:border-orange-600 after:content-['']"
                   : "hover:bg-orange-50 hover:shadow-lg hover:text-orange-600 rounded-2xl"
               }`}
