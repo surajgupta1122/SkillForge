@@ -300,7 +300,7 @@ export default function AdminMessages() {
                   placeholder="Search by name or course..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                  className="w-full pl-9 pr-3 py-2 text-sm bg-white border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                 />
               </div>
             </div>
@@ -480,7 +480,7 @@ export default function AdminMessages() {
                     onChange={(e) => setNewMessage(e.target.value)}
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     placeholder="Type your message..."
-                    className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-green-400 focus:ring-1 focus:ring-green-400"
+                    className="flex-1 px-4 py-2 border border-gray-200 rounded-full focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                   />
                   <button className="p-2 hover:bg-gray-100 rounded-full transition flex-shrink-0">
                     <Smile className="w-5 h-5 text-gray-500" />
@@ -548,7 +548,7 @@ export default function AdminMessages() {
                     setSearchUsers(e.target.value);
                     handleSearchUsers();
                   }}
-                  className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-green-400"
+                  className="w-full pl-9 pr-3 py-2 border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400"
                 />
               </div>
               

@@ -15,12 +15,16 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 import Users from "./pages/admin/Users";
 import AdminCourses from "./pages/admin/Courses"; // Renamed to AdminCourses
 import AdminMessages from "./pages/admin/AdminMessages";
+import AdminAnalytics from "./pages/admin/AdminAnalytics";
+import AdminPayments from "./pages/admin/AdminPaymentManagement";
+import AdminActivity from "./pages/admin/AdminActivity";
 import AdminSettings from "./pages/admin/AdminSettings"; // New Admin Settings page
 
 import InstructorDashboard from "./pages/instructor/InstructorDashboard";
 import ViewCourses from "./pages/instructor/InstructorMyCourses";
 import Students from "./pages/instructor/Students";
 import Analytics from "./pages/instructor/Analytics";
+import PaymentManagement from "./pages/instructor/PaymentManagement";
 import InstructorMessages from "./pages/instructor/InstructorMessages";
 import Settings from "./pages/instructor/Settings";
 import CourseStudents from "./pages/instructor/CourseStudents";
@@ -132,7 +136,6 @@ function App() {
             </ProtectedRoute>
           }
         />
-
         <Route
           path="/admin/messages"
           element={
@@ -141,6 +144,30 @@ function App() {
             </ProtectedRoute>
           }
         /> 
+        <Route
+          path="/admin/analytics"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <AdminAnalytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/transactions"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <AdminPayments />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/admin/activitys"
+          element={
+            <ProtectedRoute roles={["admin"]}>
+              <AdminActivity />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/admin/settings"
           element={
@@ -180,6 +207,14 @@ function App() {
           element={
             <ProtectedRoute roles={["instructor"]}>
               <Analytics />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/instructor/transactions"
+          element={
+            <ProtectedRoute roles={["instructor"]}>
+              <PaymentManagement />
             </ProtectedRoute>
           }
         />

@@ -10,6 +10,7 @@ import {
   MessageSquare,
   Activity,
   BarChart3,
+  Wallet,
 } from "lucide-react";
 
 export default function AdminSidebar() {
@@ -123,6 +124,18 @@ export default function AdminSidebar() {
               Courses
             </li>
 
+            <li
+              onClick={() => navigate("/admin/transactions")}
+              className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
+                isActive("/admin/transactions")
+                  ? "bg-gray-100 text-green-700 border-2 border-r-0 border-green-700 shadow-[0_6px_18px_rgba(34,197,94,0.25)] transition relative after:absolute after:-right-4 after:top--1 after:h-[110%] after:w-4 after:border-t-2 after:border-b-2 after:bg-gray-100 after:border-green-700 after:content-['']"
+                  : "hover:bg-green-100 hover:shadow-lg hover:text-green-700 rounded-2xl"
+              }`}
+            >
+              <Wallet className="w-5 h-5" />
+              Transaction
+            </li>
+
             {/* Analytics */}
             <li
               onClick={() => navigate("/admin/analytics")}
@@ -138,9 +151,9 @@ export default function AdminSidebar() {
 
             {/* Activity */}
             <li
-              onClick={() => navigate("/admin/activity")}
+              onClick={() => navigate("/admin/activitys")}
               className={`px-4 py-2.5 rounded-l-2xl font-semibold text-lg cursor-pointer duration-300 transition flex items-center gap-2 ${
-                isActive("/admin/activity")
+                isActive("/admin/activitys")
                   ? "bg-gray-100 text-green-700 border-2 border-r-0 border-green-700 shadow-[0_6px_18px_rgba(34,197,94,0.25)] transition relative after:absolute after:-right-4 after:top--1 after:h-[110%] after:w-4 after:border-t-2 after:border-b-2 after:bg-gray-100 after:border-green-700 after:content-['']"
                   : "hover:bg-green-100 hover:shadow-lg hover:text-green-700 rounded-2xl"
               }`}

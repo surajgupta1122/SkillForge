@@ -16,7 +16,9 @@ import {
   Edit,
   Trash2,
   Save,
-  AlertTriangle
+  AlertTriangle,
+  Filter,
+  ChevronDown
 } from "lucide-react";
 
 export default function Users() {
@@ -25,6 +27,7 @@ export default function Users() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all"); // "all", "student", "instructor", "admin"
 
   // Edit Modal
   const [isOpen, setIsOpen] = useState(false);
@@ -116,12 +119,13 @@ export default function Users() {
     }
   };
 
-  // Filter users
-  const filteredUsers = users.filter(
-    (u) =>
-      u.name?.toLowerCase().includes(search.toLowerCase()) ||
-      u.email?.toLowerCase().includes(search.toLowerCase())
-  );
+  // Combined filter: search + role
+  const filteredUsers = users.filter((u) => {
+    const matchesSearch = u.name?.toLowerCase().includes(search.toLowerCase()) ||
+                          u.email?.toLowerCase().includes(search.toLowerCase());
+    const matchesRole = roleFilter === "all" || u.role === roleFilter;
+    return matchesSearch && matchesRole;
+  });
 
   // Calculate stats
   const totalUsers = users.length;
@@ -250,7 +254,7 @@ export default function Users() {
               </div>
             </div>
 
-            {/* ==================== SEARCH SECTION ==================== */}
+            {/* ==================== SEARCH & FILTER SECTION ==================== */}
             <div className="bg-green-50 rounded-2xl shadow-md border border-gray-100 mb-8 overflow-hidden">
               <div className="px-6 py-5 border-b border-gray-100 flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
                 <div>
@@ -260,10 +264,27 @@ export default function Users() {
                   </h2>
                   <p className="text-xs text-gray-400 mt-0.5">Browse and search all registered users</p>
                 </div>
-                <div className="flex items-center gap-3">
+                <div className="flex flex-col sm:flex-row items-center gap-3">
                   <div className="bg-indigo-50 px-3 py-1 rounded-full">
                     <span className="text-indigo-600 text-sm font-medium">{filteredUsers.length} results</span>
                   </div>
+                  
+                  {/* Role Filter Dropdown */}
+                  <div className="relative">
+                    <select
+                      value={roleFilter}
+                      onChange={(e) => setRoleFilter(e.target.value)}
+                      className="pl-9 pr-8 py-2 text-sm bg-white border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 focus:ring-1 focus:ring-blue-400 appearance-none cursor-pointer"
+                    >
+                      <option value="all">All Roles</option>
+                      <option value="student">Student</option>
+                      <option value="instructor">Instructor</option>
+                      <option value="admin">Admin</option>
+                    </select>
+                    <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4 pointer-events-none" />
+                  </div>
+
                   {/* Search Box */}
                   <div className="relative">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -300,7 +321,7 @@ export default function Users() {
                   </div>
                   <h3 className="text-lg font-semibold text-gray-700 mb-1">No Users Found</h3>
                   <p className="text-gray-400 text-sm">
-                    {search ? "Try a different search term" : "No users available in the system"}
+                    {search || roleFilter !== "all" ? "Try a different search term or filter" : "No users available in the system"}
                   </p>
                 </div>
               ) : (
