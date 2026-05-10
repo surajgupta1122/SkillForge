@@ -42,29 +42,6 @@ export default function PaymentManagement() {
   const [withdrawAmount, setWithdrawAmount] = useState("");
   const [withdrawMethod, setWithdrawMethod] = useState("bank");
   const [accountDetails, setAccountDetails] = useState("");
-  const [paymentMethods, setPaymentMethods] = useState([
-    {
-      id: 1,
-      type: "bank",
-      label: "Bank Transfer",
-      details: "****1234",
-      isDefault: true,
-    },
-    {
-      id: 2,
-      type: "upi",
-      label: "UPI",
-      details: "instructor@okhdfcbank",
-      isDefault: false,
-    },
-    {
-      id: 3,
-      type: "paypal",
-      label: "PayPal",
-      details: "instructor@paypal.com",
-      isDefault: false,
-    },
-  ]);
 
   // Toast
   const [toast, setToast] = useState({
@@ -81,89 +58,18 @@ export default function PaymentManagement() {
     );
   };
 
-  // Fetch data
+  // Fetch data from backend
   const fetchEarnings = async () => {
     setLoading(true);
     try {
-      // Mock data – replace with API calls
-      setEarnings({
-        totalEarned: 157500,
-        pendingBalance: 25000,
-        paidOut: 132500,
-        thisMonth: 18500,
-      });
-
-      setTransactions([
-        {
-          id: 1,
-          course: "React Mastery",
-          student: "Alex Johnson",
-          amount: 3999,
-          date: "2025-05-09",
-          status: "completed",
-          type: "credit",
-        },
-        {
-          id: 2,
-          course: "Node.js Advanced",
-          student: "Sarah Williams",
-          amount: 4799,
-          date: "2025-05-08",
-          status: "completed",
-          type: "credit",
-        },
-        {
-          id: 3,
-          course: "UI/UX Design",
-          student: "Michael Chen",
-          amount: 3199,
-          date: "2025-05-07",
-          status: "completed",
-          type: "credit",
-        },
-        {
-          id: 4,
-          course: "Python for Data Science",
-          student: "Lisa Park",
-          amount: 5599,
-          date: "2025-05-06",
-          status: "completed",
-          type: "credit",
-        },
-        {
-          id: 5,
-          course: "Cloud Computing",
-          student: "David Kim",
-          amount: 6399,
-          date: "2025-05-05",
-          status: "completed",
-          type: "credit",
-        },
+      const [earningsRes, transactionsRes, withdrawalsRes] = await Promise.all([
+        api.get("/instructor/earnings"),
+        api.get("/instructor/transactions"),
+        api.get("/instructor/withdrawals"),
       ]);
-
-      setWithdrawals([
-        {
-          id: 1,
-          amount: 5000,
-          method: "Bank Transfer",
-          date: "2025-04-28",
-          status: "completed",
-        },
-        {
-          id: 2,
-          amount: 3500,
-          method: "UPI",
-          date: "2025-04-15",
-          status: "completed",
-        },
-        {
-          id: 3,
-          amount: 2000,
-          method: "PayPal",
-          date: "2025-04-01",
-          status: "pending",
-        },
-      ]);
+      setEarnings(earningsRes.data);
+      setTransactions(transactionsRes.data);
+      setWithdrawals(withdrawalsRes.data);
     } catch (err) {
       console.error(err);
       showToast("Failed to load earnings", "error");
@@ -176,7 +82,8 @@ export default function PaymentManagement() {
     fetchEarnings();
   }, []);
 
-  const handleWithdrawRequest = () => {
+  // Submit withdrawal request
+  const handleWithdrawRequest = async () => {
     if (!withdrawAmount || parseFloat(withdrawAmount) <= 0) {
       showToast("Please enter a valid amount", "error");
       return;
@@ -186,33 +93,36 @@ export default function PaymentManagement() {
       return;
     }
 
-    // API call would go here
-    const newWithdrawal = {
-      id: Date.now(),
-      amount: parseFloat(withdrawAmount),
-      method:
-        withdrawMethod === "bank"
-          ? "Bank Transfer"
-          : withdrawMethod === "upi"
+    try {
+      await api.post("/instructor/withdraw", {
+        amount: parseFloat(withdrawAmount),
+        method:
+          withdrawMethod === "bank"
+            ? "Bank Transfer"
+            : withdrawMethod === "upi"
             ? "UPI"
             : "PayPal",
-      date: new Date().toISOString().split("T")[0],
-      status: "pending",
-    };
-    setWithdrawals((prev) => [newWithdrawal, ...prev]);
-    setEarnings((prev) => ({
-      ...prev,
-      pendingBalance: prev.pendingBalance - parseFloat(withdrawAmount),
-    }));
-    setShowWithdrawModal(false);
-    setWithdrawAmount("");
-    showToast(`Withdrawal request of ₹${withdrawAmount} submitted`, "success");
+        accountDetails: accountDetails,
+      });
+      // Refresh data
+      await fetchEarnings();
+      setShowWithdrawModal(false);
+      setWithdrawAmount("");
+      setAccountDetails("");
+      showToast(`Withdrawal request of ₹${withdrawAmount} submitted`, "success");
+    } catch (err) {
+      console.error(err);
+      showToast(
+        err.response?.data?.message || "Failed to submit withdrawal request",
+        "error",
+      );
+    }
   };
 
   const filteredTransactions = transactions.filter(
     (t) =>
-      t.course.toLowerCase().includes(search.toLowerCase()) ||
-      t.student.toLowerCase().includes(search.toLowerCase()),
+      t.course?.toLowerCase().includes(search.toLowerCase()) ||
+      t.student?.toLowerCase().includes(search.toLowerCase()),
   );
 
   const logout = () => {
@@ -394,7 +304,6 @@ export default function PaymentManagement() {
                       <tr>
                         <td colSpan="5" className="text-center py-10">
                           <div className="flex flex-col items-center justify-center gap-3">
-                            {/* Icon changes based on whether there is a search term */}
                             {search ? (
                               <Search
                                 className="w-28 h-28 text-gray-300 bg-gray-50 rounded-full p-2"

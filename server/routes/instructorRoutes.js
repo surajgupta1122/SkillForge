@@ -7,31 +7,35 @@ import {
   getMyCourses,
   getCourseStudents,
 } from "../controllers/instructor/courseController.js";
+import { getInstructorStudents } from "../controllers/instructor/studentController.js";
+import {
+  getEarningsSummary,
+  getTransactionHistory,
+  getWithdrawalHistory,
+  requestWithdrawal,
+} from "../controllers/instructor/paymentController.js";
+import { getInstructorAnalytics } from "../controllers/instructor/analyticsController.js";
 
 const router = express.Router();
 
-// Create course
-router.post(
-  "/create-course",
-  verifyToken,
-  allowRoles("instructor"),
-  createCourse,
-);
+router.use(verifyToken, allowRoles("instructor"));
 
-// ✅ GET instructor courses (THIS WAS MISSING)
-router.get("/my-courses", verifyToken, allowRoles("instructor"), getMyCourses);
+// Course routes
+router.post("/create-course", createCourse);
+router.get("/my-courses", getMyCourses);
+router.get("/course/:id/students", getCourseStudents);
+router.delete("/course/:id", deleteCourse);
 
-router.get(
-  "/course/:id/students",
-  verifyToken,
-  allowRoles("instructor"),
-  getCourseStudents,
-);
+// Student routes
+router.get("/students", getInstructorStudents);
 
-router.delete(
-  "/course/:id",
-  verifyToken,
-  allowRoles("instructor"),
-  deleteCourse,
-);
+// Earnings / payment routes
+router.get("/earnings", getEarningsSummary);
+router.get("/transactions", getTransactionHistory);
+router.get("/withdrawals", getWithdrawalHistory);
+router.post("/withdraw", requestWithdrawal);
+
+// ... inside router after middleware
+router.get("/analytics", getInstructorAnalytics);
+
 export default router;
