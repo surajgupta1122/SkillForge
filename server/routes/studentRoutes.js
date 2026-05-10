@@ -7,6 +7,8 @@ import {
   getMyEnrollments,
   getTodayEnrollments,
 } from "../controllers/student/enrollmentController.js";
+import { getCertificates } from "../controllers/student/certificateController.js";
+import { getStudentProgress } from "../controllers/student/progressController.js";
 
 const router = express.Router();
 
@@ -25,5 +27,11 @@ router.get(
 );
 // my enrolled courses
 router.get("/my-courses", verifyToken, allowRoles("student"), getMyEnrollments);
+
+// inside router (after middleware)
+router.get("/certificates", verifyToken, allowRoles("student"), getCertificates);
+router.get("/certificate/:id/download", verifyToken, allowRoles("student"), downloadCertificate);
+
+router.get("/progress", verifyToken, allowRoles("student"), getStudentProgress);
 
 export default router;
