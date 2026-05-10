@@ -4,14 +4,17 @@ import {
   Mail,
   Phone,
   MapPin,
-  Linkedin,
-  Twitter,
-  Facebook,
-  Instagram,
   ChevronRight,
   Heart,
   Sparkles,
 } from "lucide-react";
+
+import {
+  FaLinkedin,
+  FaTwitter,
+  FaFacebook,
+  FaInstagram,
+} from "react-icons/fa";
 
 export default function Footer() {
   const navigate = useNavigate();
@@ -92,7 +95,11 @@ export default function Footer() {
               ].map((category) => (
                 <li key={category}>
                   <button
-                    onClick={() => navigate(`/courses?category=${encodeURIComponent(category)}`)}
+                    onClick={() =>
+                      navigate(
+                        `/courses?category=${encodeURIComponent(category)}`
+                      )
+                    }
                     className="text-gray-600 hover:text-[#0A5649] transition-colors"
                   >
                     {category}
@@ -166,36 +173,39 @@ export default function Footer() {
             <div className="flex gap-3">
               {[
                 {
-                  icon: Linkedin,
+                  icon: FaLinkedin,
                   href: "https://linkedin.com/company/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-600",
                 },
                 {
-                  icon: Twitter,
+                  icon: FaTwitter,
                   href: "https://twitter.com/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-400",
                 },
                 {
-                  icon: Facebook,
+                  icon: FaFacebook,
                   href: "https://facebook.com/skillforge",
                   color: "hover:bg-blue-100 hover:text-blue-600",
                 },
                 {
-                  icon: Instagram,
+                  icon: FaInstagram,
                   href: "https://instagram.com/skillforge",
                   color: "hover:bg-pink-100 hover:text-pink-600",
                 },
-              ].map((social, index) => (
-                <a
-                  key={index}
-                  href={social.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className={`p-2 bg-gray-100 rounded-lg text-gray-600 ${social.color} transition-all transform hover:scale-110`}
-                >
-                  <social.icon className="w-5 h-5" />
-                </a>
-              ))}
+              ].map((social, index) => {
+                const Icon = social.icon;
+                return (
+                  <a
+                    key={index}
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className={`p-2 bg-gray-100 rounded-lg text-gray-600 ${social.color} transition-all transform hover:scale-110`}
+                  >
+                    <Icon className="w-5 h-5" />
+                  </a>
+                );
+              })}
             </div>
 
             {/* Badge */}

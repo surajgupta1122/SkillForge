@@ -12,10 +12,6 @@ import {
   User,
   CheckCircle,
   AlertCircle,
-  Linkedin,
-  Twitter,
-  Facebook,
-  Instagram,
   ChevronRight,
   HelpCircle,
   BookOpen,
@@ -23,6 +19,7 @@ import {
   Globe,
   Award,
 } from "lucide-react";
+import { FaLinkedin, FaTwitter, FaFacebook, FaInstagram } from "react-icons/fa";
 
 export default function Contact() {
   const navigate = useNavigate();
@@ -118,14 +115,14 @@ export default function Contact() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50" />
+      <Navbar />
 
       {/* Hero Section */}
-      <div className="relative pt-27 overflow-hidden">
+      <div className="relative pt-28 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-[#03261F] via-[#0A5649] to-[#428746] opacity-90"></div>
         <div className="absolute inset-0 bg-[url('data:image/svg+xml,%3Csvg width=\'60\' height=\'60\' viewBox=\'0 0 60 60\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cg fill=\'none\' fill-rule=\'evenodd\'%3E%3Cg fill=\'%23ffffff\' fill-opacity=\'0.1\'%3E%3Cpath d=\'M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z\'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E')] opacity-20"></div>
 
-        <div className="relative max-w-7xl mx-auto px-6 pb-28 lg:pb-37">
+        <div className="relative max-w-7xl mx-auto px-6 pb-36 lg:pb-40">
           <div className="text-center text-white">
             <div className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm px-4 py-2 rounded-full mb-8">
               <MessageSquare className="w-4 h-4" />
@@ -175,14 +172,14 @@ export default function Contact() {
             {
               icon: Phone,
               title: "Call Us",
-              value: "+91 ********67",
+              value: "+1 (555) 123-4567",
               action: "Mon-Fri, 9am-6pm",
               color: "from-purple-600 to-pink-600",
             },
             {
               icon: MapPin,
               title: "Visit Us",
-              value: "-----------",
+              value: "San Francisco, CA",
               action: "Get directions",
               color: "from-green-600 to-emerald-600",
             },
@@ -216,7 +213,7 @@ export default function Contact() {
         <div className="grid md:grid-cols-2 gap-12">
 
           {/* Left Side - Contact Form */}
-          <div className="space-y-15">
+          <div className="space-y-8">
             {/* Heading */}
             <h2 className="text-3xl font-bold text-gray-800 mb-4">
               Send Us a <span className="text-[#0A5649]">Message</span>
@@ -347,10 +344,10 @@ export default function Contact() {
               </p>
               <div className="flex gap-4">
                 {[
-                  { icon: Linkedin, color: "hover:bg-blue-100 hover:text-blue-600" },
-                  { icon: Twitter, color: "hover:bg-blue-100 hover:text-blue-400" },
-                  { icon: Facebook, color: "hover:bg-blue-100 hover:text-blue-600" },
-                  { icon: Instagram, color: "hover:bg-pink-100 hover:text-pink-600" },
+                  { icon: FaLinkedin, color: "hover:bg-blue-100 hover:text-blue-600" },
+                  { icon: FaTwitter, color: "hover:bg-blue-100 hover:text-blue-400" },
+                  { icon: FaFacebook, color: "hover:bg-blue-100 hover:text-blue-600" },
+                  { icon: FaInstagram, color: "hover:bg-pink-100 hover:text-pink-600" },
                 ].map((social, index) => (
                   <button
                     key={index}

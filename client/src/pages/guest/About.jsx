@@ -15,10 +15,8 @@ import {
   Mail,
   MapPin,
   Phone,
-  Linkedin,
-  Twitter,
-  Github,
 } from "lucide-react";
+import { FaLinkedin, FaTwitter, FaGithub } from "react-icons/fa";
 
 export default function About() {
   const navigate = useNavigate();
@@ -29,7 +27,7 @@ export default function About() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <Navbar className="fixed top-0 w-full bg-white/80 backdrop-blur-md border-b border-gray-200 z-50" />
+      <Navbar />
 
       {/* Hero Section */}
       <div className="relative pt-13 overflow-hidden">
@@ -242,7 +240,7 @@ export default function About() {
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-3">
                 <Phone className="w-5 h-5 text-[#CCDE2F]" />
               </div>
-              <p className="font-medium">+91 ********67</p>
+              <p className="font-medium">+1 (555) 123-4567</p>
             </div>
             <div className="flex flex-col items-center">
               <div className="w-12 h-12 bg-white/10 rounded-full flex items-center justify-center mb-3">
@@ -260,7 +258,6 @@ export default function About() {
           </button>
         </div>
       </div>
-
     </div>
   );
 }
