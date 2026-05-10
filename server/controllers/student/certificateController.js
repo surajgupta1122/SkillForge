@@ -1,139 +1,58 @@
-import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../../service/api";
-import StudentSidebar from "../../components/StudentSidebar.jsx";
-import {
-  Award,
-  Download,
-  Search,
-  X,         // Add missing X
-  Calendar,
-  CheckCircle,
-  Trophy,
-  Sparkles,
-  Medal,
-  Star,
-  Share2,
-  Eye,
-  FileText,
-  Clock,
-  GraduationCap,
-  Users,
-  TrendingUp
-} from "lucide-react";
+import db from "../../config/db.js";
 
-export default function Certificates() {
-  const navigate = useNavigate();
-  const [certificates, setCertificates] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [search, setSearch] = useState("");
-  const [selectedCertificate, setSelectedCertificate] = useState(null);
-
-  // Toast (cleanup)
-  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
-
-  const showToast = useCallback((msg, type = "success") => {
-    setToast({ show: true, message: msg, type });
-  }, []);
-
-  useEffect(() => {
-    if (!toast.show) return;
-    const timer = setTimeout(() => {
-      setToast({ show: false, message: "", type: "success" });
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [toast.show]);
-
-  const fetchCertificates = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await api.get("/student/certificates");
-      setCertificates(res.data);
-    } catch (err) {
-      console.error(err);
-      showToast("Failed to load certificates", "error");
-      setError("Could not load certificates. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [showToast]);
-
-  useEffect(() => {
-    fetchCertificates();
-  }, [fetchCertificates]);
-
-  const filteredCertificates = certificates.filter((cert) =>
-    cert.courseTitle?.toLowerCase().includes(search.toLowerCase()) ||
-    cert.certificateId?.toLowerCase().includes(search.toLowerCase())
-  );
-
-  const handleDownload = async (certificate) => {
-    try {
-      const response = await api.get(`/student/certificate/${certificate.id}/download`, {
-        responseType: 'blob'
-      });
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', `certificate_${certificate.certificateId}.pdf`);
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      showToast(`Downloading certificate for ${certificate.courseTitle}`, "success");
-    } catch (err) {
-      showToast("Failed to download certificate", "error");
-    }
-  };
-
-  const handleShare = async (certificate) => {
-    try {
-      await navigator.share({
-        title: `Certificate of Completion - ${certificate.courseTitle}`,
-        text: `I have successfully completed ${certificate.courseTitle} course!`,
-        url: window.location.href,
-      });
-      showToast("Shared successfully!", "success");
-    } catch (err) {
-      showToast("Share cancelled or failed", "error");
-    }
-  };
-
-  const handleView = (certificate) => setSelectedCertificate(certificate);
-  const closeModal = () => setSelectedCertificate(null);
-
-  // Stats
-  const totalCertificates = certificates.length;
-  const averageScore = certificates.length > 0
-    ? Math.round(certificates.reduce((sum, cert) => sum + (cert.score || 0), 0) / certificates.length)
-    : 0;
-  const topGrade = certificates.length > 0
-    ? certificates.reduce((best, cert) => {
-        const gradeOrder = { "A+": 5, "A": 4, "B+": 3, "B": 2, "C": 1 };
-        return gradeOrder[best.grade] > gradeOrder[cert.grade] ? best : cert;
-      }).grade
-    : "N/A";
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-      </div>
+export const getCertificates = async (req, res) => {
+  const studentId = req.user.id;
+  try {
+    const [rows] = await db.query(
+      `SELECT 
+        c.id,
+        c.course_id AS courseId,
+        c.certificate_id AS certificateId,
+        c.issue_date AS issueDate,
+        c.grade,
+        c.score,
+        co.title AS courseTitle,
+        u.name AS instructor,
+        co.duration
+       FROM certificates c
+       JOIN courses co ON c.course_id = co.id
+       JOIN users u ON co.instructor_id = u.id
+       WHERE c.student_id = ?
+       ORDER BY c.issue_date DESC`,
+      [studentId]
     );
+    res.json(rows);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
   }
+};
 
-  return (
-    <div className="min-h-screen bg-gray-100 p-1 pr-0">
-      {/* ... rest of JSX (same as original, but now X icon works) ... */}
-      {/* Add error banner */}
-      {error && (
-        <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200">
-          {error}
-        </div>
-      )}
-      {/* ... keep certificate grid, modal, toast ... */}
-    </div>
-  );
-}
+export const downloadCertificate = async (req, res) => {
+  const studentId = req.user.id;
+  const certificateId = req.params.id;
+  try {
+    const [rows] = await db.query(
+      `SELECT c.*, co.title as courseTitle
+       FROM certificates c
+       JOIN courses co ON c.course_id = co.id
+       WHERE c.id = ? AND c.student_id = ?`,
+      [certificateId, studentId]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ message: "Certificate not found" });
+    }
+
+    const cert = rows[0];
+    const content = `Certificate of Completion: ${cert.courseTitle} – Grade: ${cert.grade}`;
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename=certificate_${cert.certificate_id}.pdf`
+    );
+    res.send(Buffer.from(content));
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+};

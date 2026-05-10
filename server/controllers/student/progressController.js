@@ -1,145 +1,178 @@
-import { useEffect, useState, useCallback } from "react";
-import { useNavigate } from "react-router-dom";
-import api from "../../service/api";
-import StudentSidebar from "../../components/StudentSidebar.jsx";
-import {
-  TrendingUp,
-  Clock,
-  CheckCircle,
-  BookOpen,
-  Target,
-  Calendar,
-  Award,
-  BarChart3,
-  LineChart,
-  PieChart,
-  Activity,
-  Zap,
-  Flame,
-  Brain,
-  Sparkles,
-  ChevronRight,
-  PlayCircle,
-  Star,
-  Users,
-  Timer,
-  FileText,
-  X // Added missing X
-} from "lucide-react";
+import db from "../../config/db.js";
 
-export default function Progress() {
-  const navigate = useNavigate();
-  const [progress, setProgress] = useState({
-    overall: 0,
-    courses: [],
-    recentActivity: [],
-    weeklyData: [],
-    totalHoursSpent: 0,
-    totalLessonsCompleted: 0,
-    streakDays: 0,
-    badges: []
-  });
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-
-  // Toast (with cleanup)
-  const [toast, setToast] = useState({ show: false, message: "", type: "success" });
-
-  const showToast = useCallback((msg, type = "success") => {
-    setToast({ show: true, message: msg, type });
-  }, []);
-
-  useEffect(() => {
-    if (!toast.show) return;
-    const timer = setTimeout(() => {
-      setToast({ show: false, message: "", type: "success" });
-    }, 3000);
-    return () => clearTimeout(timer);
-  }, [toast.show]);
-
-  const fetchProgress = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const res = await api.get("/student/progress");
-      setProgress(res.data);
-    } catch (err) {
-      console.error(err);
-      showToast("Failed to load progress data", "error");
-      setError("Could not load progress. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }, [showToast]);
-
-  useEffect(() => {
-    fetchProgress();
-  }, [fetchProgress]);
-
-  // Safe calculations for weekly chart
-  const weeklyData = progress.weeklyData || [];
-  const maxHours = Math.max(...weeklyData.map(d => d.hours), 1);
-  const maxLessons = Math.max(...weeklyData.map(d => d.lessons), 1);
-
-  // Best learning day and peak hours (fallbacks)
-  const bestDay = weeklyData.length ? weeklyData.reduce((max, d) => d.hours > max.hours ? d : max, weeklyData[0]) : null;
-  const peakHours = bestDay ? bestDay.hours : 0;
-
-  // Find course with lowest progress for recommendation
-  const recommendedCourse = progress.courses.length ? progress.courses.reduce((min, c) => c.progress < min.progress ? c : min) : null;
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent"></div>
-      </div>
+export const getStudentProgress = async (req, res) => {
+  const studentId = req.user.id;
+  try {
+    // 1. Overall progress (percentage of completed lessons)
+    const [overallRow] = await db.query(
+      `SELECT 
+         COALESCE(
+           ROUND(
+             (SUM(CASE WHEN lp.completed = 1 THEN 1 ELSE 0 END) / 
+              NULLIF(COUNT(lp.id), 0)) * 100
+           ), 0
+         ) as overall
+       FROM lesson_progress lp
+       JOIN lessons l ON lp.lesson_id = l.id
+       JOIN courses c ON l.course_id = c.id
+       WHERE lp.student_id = ? AND c.isApproved = 1`,
+      [studentId]
     );
+    const overall = overallRow[0]?.overall || 0;
+
+    // 2. Per‑course progress
+    const [courses] = await db.query(
+      `SELECT 
+         c.id,
+         c.title,
+         COUNT(l.id) as totalLessons,
+         SUM(CASE WHEN lp.completed = 1 THEN 1 ELSE 0 END) as completedLessons,
+         COALESCE(SUM(l.duration_minutes), 0) as totalDuration,
+         COALESCE(SUM(CASE WHEN lp.completed = 1 THEN l.duration_minutes ELSE 0 END), 0) as timeSpentMinutes,
+         COALESCE(e.score, 0) as score,
+         MAX(lp.completed_at) as lastAccessed
+       FROM enrollments e
+       JOIN courses c ON e.course_id = c.id
+       LEFT JOIN lessons l ON l.course_id = c.id
+       LEFT JOIN lesson_progress lp ON lp.lesson_id = l.id AND lp.student_id = ?
+       WHERE e.student_id = ? AND c.isApproved = 1
+       GROUP BY c.id, e.score
+       ORDER BY lastAccessed DESC`,
+      [studentId, studentId]
+    );
+
+    const courseList = courses.map((c) => ({
+      id: c.id,
+      title: c.title,
+      totalLessons: c.totalLessons,
+      lessonsCompleted: c.completedLessons,
+      progress: c.totalLessons
+        ? Math.round((c.completedLessons / c.totalLessons) * 100)
+        : 0,
+      timeSpent: Math.round(c.timeSpentMinutes / 60) || 0,   // hours
+      lastAccessed: c.lastAccessed
+        ? new Date(c.lastAccessed).toISOString().slice(0, 10)
+        : new Date().toISOString().slice(0, 10),
+      score: c.score || 0,
+    }));
+
+    // 3. Recent activity (last 10 completed lessons)
+    const [recent] = await db.query(
+      `SELECT 
+         l.title as lesson,
+         c.title as course,
+         l.duration_minutes as timeSpent,
+         lp.completed_at as completed
+       FROM lesson_progress lp
+       JOIN lessons l ON lp.lesson_id = l.id
+       JOIN courses c ON l.course_id = c.id
+       WHERE lp.student_id = ? AND lp.completed = 1
+       ORDER BY lp.completed_at DESC
+       LIMIT 10`,
+      [studentId]
+    );
+
+    const recentActivity = recent.map((r, idx) => ({
+      id: idx + 1,
+      course: r.course,
+      lesson: r.lesson,
+      completed: r.completed,
+      timeSpent: r.timeSpent,   // minutes
+    }));
+
+    // 4. Weekly data (last 7 days)
+    const [weekly] = await db.query(
+      `SELECT 
+         DAYNAME(lp.completed_at) as day,
+         COUNT(*) as lessons,
+         COALESCE(SUM(l.duration_minutes), 0) as totalMinutes
+       FROM lesson_progress lp
+       JOIN lessons l ON lp.lesson_id = l.id
+       WHERE lp.student_id = ? AND lp.completed = 1
+         AND lp.completed_at >= DATE_SUB(NOW(), INTERVAL 7 DAY)
+       GROUP BY DAYNAME(lp.completed_at)`,
+      [studentId]
+    );
+
+    const dayOrder = {
+      Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4,
+      Friday: 5, Saturday: 6, Sunday: 7,
+    };
+    const allDays = [
+      "Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday"
+    ];
+    const weeklyData = allDays.map((day) => {
+      const found = weekly.find((w) => w.day === day);
+      return {
+        day: day.slice(0, 3),
+        hours: found ? Math.round(found.totalMinutes / 60) : 0,
+        lessons: found ? found.lessons : 0,
+      };
+    });
+
+    // 5. Totals
+    const [totalRow] = await db.query(
+      `SELECT 
+         COUNT(*) as totalLessonsCompleted,
+         COALESCE(SUM(l.duration_minutes), 0) as totalMinutesSpent
+       FROM lesson_progress lp
+       JOIN lessons l ON lp.lesson_id = l.id
+       WHERE lp.student_id = ? AND lp.completed = 1`,
+      [studentId]
+    );
+    const totalLessonsCompleted = totalRow[0]?.totalLessonsCompleted || 0;
+    const totalHoursSpent = Math.round((totalRow[0]?.totalMinutesSpent || 0) / 60);
+
+    // 6. Streak (consecutive days)
+    const [streakData] = await db.query(
+      `SELECT DISTINCT DATE(lp.completed_at) as compDate
+       FROM lesson_progress lp
+       WHERE lp.student_id = ? AND lp.completed = 1
+       ORDER BY compDate DESC
+       LIMIT 30`,
+      [studentId]
+    );
+
+    let streakDays = 0;
+    if (streakData.length > 0) {
+      const oneDay = 24 * 60 * 60 * 1000;
+      let expected = new Date(streakData[0].compDate);
+      for (let i = 0; i < streakData.length; i++) {
+        const cur = new Date(streakData[i].compDate);
+        const diff = Math.round((expected - cur) / oneDay);
+        if (diff === 0) {
+          streakDays++;
+          expected = new Date(expected.getTime() - oneDay);
+        } else if (diff === 1) {
+          streakDays++;
+          expected = new Date(cur.getTime() - oneDay);
+        } else {
+          break;
+        }
+      }
+    }
+
+    // 7. Badges
+    const [badges] = await db.query(
+      `SELECT b.name, b.icon, b.description
+       FROM user_badges ub
+       JOIN badges b ON ub.badge_id = b.id
+       WHERE ub.user_id = ?`,
+      [studentId]
+    );
+
+    res.json({
+      overall,
+      courses: courseList,
+      recentActivity,
+      weeklyData,
+      totalHoursSpent,
+      totalLessonsCompleted,
+      streakDays,
+      badges,
+    });
+  } catch (err) {
+    console.error("Progress error:", err);
+    res.status(500).json({ message: "Server error", error: err.message });
   }
-
-  return (
-    <div className="min-h-screen bg-gray-100 p-1 pr-0">
-      <div className="flex h-[calc(100vh-8px)] overflow-hidden rounded-3xl">
-        <StudentSidebar />
-
-        <main className="flex-1 overflow-y-auto custom-scroll">
-          <div className="max-w-7xl mx-auto px-6 py-8 md:px-8 lg:px-10">
-            {/* Header, stats cards, weekly chart, course progress, recent activity & badges, learning insights */}
-            {/* ... keep all JSX exactly as you had, with the following adjustments: */}
-
-            {/* Add error banner */}
-            {error && (
-              <div className="mb-4 p-4 bg-red-50 text-red-700 rounded-xl border border-red-200">
-                {error}
-              </div>
-            )}
-
-            {/* In the "Best Learning Day" and "Most Productive" sections, use fallbacks */}
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-sm opacity-80">Best Learning Day</p>
-              <p className="text-2xl font-bold mt-1">{bestDay ? bestDay.day : "N/A"}</p>
-              <p className="text-xs opacity-75 mt-1">You learn best on weekends!</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-sm opacity-80">Most Productive</p>
-              <p className="text-2xl font-bold mt-1">{peakHours} hours</p>
-              <p className="text-xs opacity-75 mt-1">Your peak learning day</p>
-            </div>
-            <div className="bg-white/10 rounded-xl p-4 backdrop-blur-sm">
-              <p className="text-sm opacity-80">Recommended Focus</p>
-              <p className="text-2xl font-bold mt-1">{recommendedCourse ? recommendedCourse.title : "None"}</p>
-              <p className="text-xs opacity-75 mt-1">
-                {recommendedCourse ? `${recommendedCourse.progress}% complete - almost there!` : "Enroll in a course"}
-              </p>
-            </div>
-
-            {/* Modal now uses X icon (imported) */}
-            {/* ... */}
-          </div>
-        </main>
-      </div>
-
-      {/* ... Toast notification (no changes) ... */}
-    </div>
-  );
-}
+};

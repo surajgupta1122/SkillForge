@@ -7,7 +7,7 @@ import {
   getMyEnrollments,
   getTodayEnrollments,
 } from "../controllers/student/enrollmentController.js";
-import { getCertificates } from "../controllers/student/certificateController.js";
+import { getCertificates, downloadCertificate } from "../controllers/student/certificateController.js";
 import { getStudentProgress } from "../controllers/student/progressController.js";
 
 const router = express.Router();
@@ -18,20 +18,29 @@ router.get("/courses", verifyToken, allowRoles("student"), getAllCourses);
 // Enroll in a course
 router.post("/enroll", verifyToken, allowRoles("student"), enrollCourse);
 
-// Get enrolled courses for the student
+// Get today's courses
 router.get(
   "/today-courses",
   verifyToken,
   allowRoles("student"),
   getTodayEnrollments,
 );
-// my enrolled courses
+
+// Get my enrolled courses
 router.get("/my-courses", verifyToken, allowRoles("student"), getMyEnrollments);
 
-// inside router (after middleware)
+// Get certificates list
 router.get("/certificates", verifyToken, allowRoles("student"), getCertificates);
-router.get("/certificate/:id/download", verifyToken, allowRoles("student"), downloadCertificate);
 
+// Download a specific certificate
+router.get(
+  "/certificate/:id/download",
+  verifyToken,
+  allowRoles("student"),
+  downloadCertificate
+);
+
+// Get student progress
 router.get("/progress", verifyToken, allowRoles("student"), getStudentProgress);
 
 export default router;
