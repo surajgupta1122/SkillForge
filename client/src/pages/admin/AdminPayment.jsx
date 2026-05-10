@@ -39,6 +39,12 @@ export default function AdminPayments() {
   const [selectedWithdrawal, setSelectedWithdrawal] = useState(null);
   const [showApproveModal, setShowApproveModal] = useState(false);
   const [approveNote, setApproveNote] = useState("");
+  const [stats, setStats] = useState({
+    totalRevenue: 0,
+    platformFee: 0,
+    paidToInstructors: 0,
+    pendingPayouts: 0
+  });
 
   // Toast
   const [toast, setToast] = useState({ show: false, message: "" });
@@ -48,38 +54,57 @@ export default function AdminPayments() {
     setTimeout(() => setToast({ show: false, message: "" }), 3000);
   };
 
-  // Mock data fetch
+  // Fetch real data from backend
   const fetchData = async () => {
     setLoading(true);
     try {
-      // Mock platform revenue data
-      const revenueData = {
-        totalRevenue: 245000,
-        platformFee: 49000,  // 20% of total revenue
-        paidToInstructors: 176000,
-        pendingPayouts: 20000,
-        monthlyRevenue: [22500, 28000, 34000, 41000, 48000, 55000]
-      };
-      
-      // Mock transactions
-      const transactionsData = [
-        { id: 1, type: "payment", student: "Alex Johnson", course: "React Mastery", amount: 4999, platformFee: 1000, instructorEarn: 3999, date: "2025-05-09", status: "completed" },
-        { id: 2, type: "payment", student: "Sarah Williams", course: "Node.js Advanced", amount: 5999, platformFee: 1200, instructorEarn: 4799, date: "2025-05-08", status: "completed" },
-        { id: 3, type: "refund", student: "Michael Chen", course: "UI/UX Design", amount: 3999, platformFee: -800, instructorEarn: -3199, date: "2025-05-07", status: "refunded" },
-        { id: 4, type: "payment", student: "Lisa Park", course: "Python for Data Science", amount: 6999, platformFee: 1400, instructorEarn: 5599, date: "2025-05-06", status: "completed" },
-        { id: 5, type: "payment", student: "David Kim", course: "Cloud Computing", amount: 7999, platformFee: 1600, instructorEarn: 6399, date: "2025-05-05", status: "completed" }
-      ];
-      
-      // Mock withdrawal requests
-      const withdrawalsData = [
-        { id: 1, instructor: "Dr. Emily Clarke", amount: 5000, method: "Bank Transfer", account: "****1234", requestDate: "2025-05-08", status: "pending", note: "Monthly earnings" },
-        { id: 2, instructor: "Prof. James Wilson", amount: 3500, method: "UPI", account: "james@okhdfcbank", requestDate: "2025-05-07", status: "pending", note: "Course revenue" },
-        { id: 3, instructor: "Maria Garcia", amount: 2000, method: "PayPal", account: "maria@paypal.com", requestDate: "2025-05-06", status: "approved", note: "Bonus" },
-        { id: 4, instructor: "Dr. Sarah Lee", amount: 8000, method: "Bank Transfer", account: "****5678", requestDate: "2025-05-05", status: "completed", note: "Full month earnings" }
-      ];
-      
-      setTransactions(transactionsData);
-      setWithdrawals(withdrawalsData);
+      const [transactionsRes, withdrawalsRes] = await Promise.all([
+        api.get("/admin/transactions"),
+        api.get("/admin/withdrawals")
+      ]);
+
+      // Map transactions
+      const mappedTransactions = transactionsRes.data.map(tx => ({
+        id: tx.id,
+        student: tx.student_name,
+        course: tx.course_title,
+        amount: tx.amount,
+        platformFee: tx.platform_fee,
+        instructorEarn: tx.instructor_earn,
+        date: new Date(tx.created_at).toISOString().split('T')[0],
+        status: tx.status
+      }));
+
+      // Map withdrawals
+      const mappedWithdrawals = withdrawalsRes.data.map(w => ({
+        id: w.id,
+        instructor: w.instructor_name,
+        amount: w.amount,
+        method: w.payment_method,
+        account: w.account_details,
+        requestDate: new Date(w.requested_at).toISOString().split('T')[0],
+        status: w.status,
+        note: w.admin_note
+      }));
+
+      setTransactions(mappedTransactions);
+      setWithdrawals(mappedWithdrawals);
+
+      // Compute stats from real data
+      const totalRevenue = mappedTransactions
+        .filter(tx => tx.status === 'completed')
+        .reduce((sum, tx) => sum + tx.amount, 0);
+      const platformFee = mappedTransactions
+        .filter(tx => tx.status === 'completed')
+        .reduce((sum, tx) => sum + tx.platformFee, 0);
+      const paidToInstructors = mappedTransactions
+        .filter(tx => tx.status === 'completed')
+        .reduce((sum, tx) => sum + tx.instructorEarn, 0);
+      const pendingPayouts = mappedWithdrawals
+        .filter(w => w.status === 'pending')
+        .reduce((sum, w) => sum + w.amount, 0);
+
+      setStats({ totalRevenue, platformFee, paidToInstructors, pendingPayouts });
     } catch (err) {
       console.error(err);
       showToast("Failed to load payment data");
@@ -92,46 +117,60 @@ export default function AdminPayments() {
     fetchData();
   }, []);
 
-  // Stats calculations
-  const totalRevenue = 245000;
-  const platformFee = 49000;
-  const paidToInstructors = 176000;
-  const pendingPayouts = withdrawals.filter(w => w.status === "pending").reduce((sum, w) => sum + w.amount, 0);
-  
+  // Filter withdrawals based on status and search
   const filteredWithdrawals = withdrawals.filter(w => {
     if (filterStatus !== "all" && w.status !== filterStatus) return false;
     if (search && !w.instructor.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
+  // Approve withdrawal (calls backend)
   const handleApproveWithdrawal = (withdrawal) => {
     setSelectedWithdrawal(withdrawal);
     setShowApproveModal(true);
   };
 
-  const confirmApprove = () => {
-    setWithdrawals(prev => prev.map(w =>
-      w.id === selectedWithdrawal.id 
-        ? { ...w, status: "approved", processedDate: new Date().toISOString().split('T')[0] }
-        : w
-    ));
-    setShowApproveModal(false);
-    setApproveNote("");
-    showToast(`✅ Withdrawal of ₹${selectedWithdrawal.amount} approved for ${selectedWithdrawal.instructor}`);
+  const confirmApprove = async () => {
+    if (!selectedWithdrawal) return;
+    try {
+      await api.put(`/admin/withdrawals/${selectedWithdrawal.id}/approve`, {
+        admin_note: approveNote
+      });
+      // Refresh data
+      await fetchData();
+      showToast(`✅ Withdrawal of ₹${selectedWithdrawal.amount} approved for ${selectedWithdrawal.instructor}`);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to approve withdrawal");
+    } finally {
+      setShowApproveModal(false);
+      setApproveNote("");
+      setSelectedWithdrawal(null);
+    }
   };
 
-  const handleRejectWithdrawal = (id) => {
-    setWithdrawals(prev => prev.map(w =>
-      w.id === id ? { ...w, status: "rejected" } : w
-    ));
-    showToast(`❌ Withdrawal request rejected`);
+  // Reject withdrawal
+  const handleRejectWithdrawal = async (id) => {
+    try {
+      await api.put(`/admin/withdrawals/${id}/reject`, { admin_note: "Rejected by admin" });
+      await fetchData();
+      showToast(`❌ Withdrawal request rejected`);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to reject withdrawal");
+    }
   };
 
-  const handleMarkPaid = (id) => {
-    setWithdrawals(prev => prev.map(w =>
-      w.id === id ? { ...w, status: "completed", processedDate: new Date().toISOString().split('T')[0] } : w
-    ));
-    showToast(`💰 Withdrawal marked as paid`);
+  // Mark as paid (complete)
+  const handleMarkPaid = async (id) => {
+    try {
+      await api.put(`/admin/withdrawals/${id}/complete`);
+      await fetchData();
+      showToast(`💰 Withdrawal marked as paid`);
+    } catch (err) {
+      console.error(err);
+      showToast("Failed to mark as paid");
+    }
   };
 
   const logout = () => {
@@ -178,14 +217,14 @@ export default function AdminPayments() {
               </div>
             </div>
 
-            {/* Stats Cards */}
+            {/* Stats Cards (using real stats) */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
               <div className="bg-white rounded-2xl shadow-md border border-gray-100 p-5 transition-all duration-300 group hover:shadow-md">
                 <div className="flex items-center justify-between mb-3">
                   <div className="w-12 h-12 rounded-xl bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition">
                     <DollarSign className="w-6 h-6 text-blue-500" />
                   </div>
-                  <span className="text-2xl font-black text-gray-800">₹{totalRevenue.toLocaleString()}</span>
+                  <span className="text-2xl font-black text-gray-800">₹{stats.totalRevenue.toLocaleString()}</span>
                 </div>
                 <p className="text-gray-500 text-sm">Total</p>
                 <p className="text-gray-700 font-semibold mt-1">Platform Revenue</p>
@@ -196,7 +235,7 @@ export default function AdminPayments() {
                   <div className="w-12 h-12 rounded-xl bg-purple-50 flex items-center justify-center group-hover:bg-purple-100 transition">
                     <TrendingUp className="w-6 h-6 text-purple-500" />
                   </div>
-                  <span className="text-2xl font-black text-gray-800">₹{platformFee.toLocaleString()}</span>
+                  <span className="text-2xl font-black text-gray-800">₹{stats.platformFee.toLocaleString()}</span>
                 </div>
                 <p className="text-gray-500 text-sm">Platform</p>
                 <p className="text-gray-700 font-semibold mt-1">Platform Fee (20%)</p>
@@ -207,7 +246,7 @@ export default function AdminPayments() {
                   <div className="w-12 h-12 rounded-xl bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition">
                     <Users className="w-6 h-6 text-green-500" />
                   </div>
-                  <span className="text-2xl font-black text-gray-800">₹{paidToInstructors.toLocaleString()}</span>
+                  <span className="text-2xl font-black text-gray-800">₹{stats.paidToInstructors.toLocaleString()}</span>
                 </div>
                 <p className="text-gray-500 text-sm">Paid to</p>
                 <p className="text-gray-700 font-semibold mt-1">Instructors (Total)</p>
@@ -218,7 +257,7 @@ export default function AdminPayments() {
                   <div className="w-12 h-12 rounded-xl bg-yellow-50 flex items-center justify-center group-hover:bg-yellow-100 transition">
                     <Clock className="w-6 h-6 text-yellow-500" />
                   </div>
-                  <span className="text-2xl font-black text-gray-800">₹{pendingPayouts.toLocaleString()}</span>
+                  <span className="text-2xl font-black text-gray-800">₹{stats.pendingPayouts.toLocaleString()}</span>
                 </div>
                 <p className="text-gray-500 text-sm">Pending</p>
                 <p className="text-gray-700 font-semibold mt-1">Pending Payouts</p>
@@ -269,10 +308,10 @@ export default function AdminPayments() {
               {selectedTab === "overview" && (
                 <div className="p-6">
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    {/* Monthly Revenue Chart Placeholder */}
+                    {/* Monthly Revenue Chart Placeholder (can be replaced with real chart later) */}
                     <div className="border border-gray-100 rounded-xl shadow-md">
                       <div className="bg-green-50 p-4 border-b border-gray-100 rounded-t-xl">
-                      <h3 className="font-semibold text-gray-800">Monthly Revenue Trend</h3>
+                        <h3 className="font-semibold text-gray-800">Monthly Revenue Trend</h3>
                       </div>
                       <div className="space-y-3 px-4 py-4">
                         {["Jan", "Feb", "Mar", "Apr", "May", "Jun"].map((month, i) => (
@@ -290,14 +329,14 @@ export default function AdminPayments() {
                     </div>
                     {/* Revenue Breakdown */}
                     <div className="border border-gray-100 rounded-xl shadow-md">
-                      <div className="bg-green-50 p-4 border-b border-gray-100 rounded-t-xl ">
-                      <h3 className="font-semibold text-gray-800">Revenue Breakdown</h3>
+                      <div className="bg-green-50 p-4 border-b border-gray-100 rounded-t-xl">
+                        <h3 className="font-semibold text-gray-800">Revenue Breakdown</h3>
                       </div>
                       <div className="space-y-4 px-4 py-4">
                         <div>
                           <div className="flex justify-between text-sm mb-1">
                             <span>Platform Fee (20%)</span>
-                            <span className="font-medium text-purple-600">₹{platformFee.toLocaleString()}</span>
+                            <span className="font-medium text-purple-600">₹{stats.platformFee.toLocaleString()}</span>
                           </div>
                           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                             <div className="h-full bg-purple-500 rounded-full" style={{ width: '20%' }}></div>
@@ -306,7 +345,7 @@ export default function AdminPayments() {
                         <div>
                           <div className="flex justify-between text-sm mb-1">
                             <span>Instructor Earnings (80%)</span>
-                            <span className="font-medium text-green-600">₹{paidToInstructors.toLocaleString()}</span>
+                            <span className="font-medium text-green-600">₹{stats.paidToInstructors.toLocaleString()}</span>
                           </div>
                           <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
                             <div className="h-full bg-green-500 rounded-full" style={{ width: '80%' }}></div>
@@ -314,10 +353,10 @@ export default function AdminPayments() {
                         </div>
                       </div>
                       <div className="px-4">
-                      <div className="mt-4 p-3 bg-gray-100 rounded-lg ">
-                        <p className="text-xs text-gray-500">Total paid to instructors: <span className="font-bold text-gray-800">₹{paidToInstructors.toLocaleString()}</span></p>
-                        <p className="text-xs text-gray-500 mt-1">Pending payouts: <span className="font-bold text-yellow-600">₹{pendingPayouts.toLocaleString()}</span></p>
-                      </div>
+                        <div className="mt-4 p-3 bg-gray-100 rounded-lg">
+                          <p className="text-xs text-gray-500">Total paid to instructors: <span className="font-bold text-gray-800">₹{stats.paidToInstructors.toLocaleString()}</span></p>
+                          <p className="text-xs text-gray-500 mt-1">Pending payouts: <span className="font-bold text-yellow-600">₹{stats.pendingPayouts.toLocaleString()}</span></p>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -404,7 +443,7 @@ export default function AdminPayments() {
                         />
                       </div>
                     </div>
-                    <button className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
+                    <button onClick={fetchData} className="flex items-center gap-1 px-3 py-1.5 text-sm bg-gray-100 rounded-lg hover:bg-gray-200">
                       <RefreshCw className="w-4 h-4" />
                       Refresh
                     </button>

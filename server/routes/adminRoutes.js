@@ -17,6 +17,16 @@ import {
   approveCourse,
   rejectCourse,
 } from "../controllers/admin/courseController.js";
+import { 
+    getWithdrawalRequests, 
+    approveWithdrawal, 
+    rejectWithdrawal, 
+    completeWithdrawal,
+    getAllTransactions 
+} from "../controllers/admin/paymentController.js";
+import { getPlatformAnalytics } from "../controllers/admin/analyticsController.js";
+import { getActivityLogs } from "../controllers/admin/activityController.js";
+
 
 const router = express.Router();
 
@@ -74,5 +84,18 @@ router.put("/user/:id", verifyToken, allowRoles("admin"), updateUser);
 
 // Delete user
 router.delete("/user/:id", verifyToken, allowRoles("admin"), deleteUser);
+
+// Analytics
+router.get("/analytics", verifyToken, allowRoles("admin"), getPlatformAnalytics);
+
+// Activity logs
+router.get("/activities", verifyToken, allowRoles("admin"), getActivityLogs);
+
+// Payment & withdrawals
+router.get("/withdrawals", verifyToken, allowRoles("admin"), getWithdrawalRequests);
+router.put("/withdrawals/:id/approve", verifyToken, allowRoles("admin"), approveWithdrawal);
+router.put("/withdrawals/:id/reject", verifyToken, allowRoles("admin"), rejectWithdrawal);
+router.put("/withdrawals/:id/complete", verifyToken, allowRoles("admin"), completeWithdrawal);
+router.get("/transactions", verifyToken, allowRoles("admin"), getAllTransactions);
 
 export default router;

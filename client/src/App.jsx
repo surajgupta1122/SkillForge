@@ -16,7 +16,7 @@ import Users from "./pages/admin/Users";
 import AdminCourses from "./pages/admin/Courses"; // Renamed to AdminCourses
 import AdminMessages from "./pages/admin/AdminMessages";
 import AdminAnalytics from "./pages/admin/AdminAnalytics";
-import AdminPayments from "./pages/admin/AdminPaymentManagement";
+import AdminPayments from "./pages/admin/AdminPayment";
 import AdminActivity from "./pages/admin/AdminActivity";
 import AdminSettings from "./pages/admin/AdminSettings"; // New Admin Settings page
 
