@@ -3,6 +3,8 @@ import cors from "cors";
 import dotenv from "dotenv";
 import { Server as SocketServer } from "socket.io";
 import http from "http";
+import path from "path";
+import { fileURLToPath } from "url";
 
 import authRoutes from "./routes/authRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -11,6 +13,9 @@ import instructorRoutes from "./routes/instructorRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import messageRoutes from "./routes/messageRoutes.js";
 import { setupSocket } from "./socket/socketHandler.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 dotenv.config();
 
@@ -24,13 +29,16 @@ const io = new SocketServer(server, {
     methods: ["GET", "POST"],
     credentials: true,
   },
-  pingTimeout: 60000,   // 60 seconds – keep connection alive
-  pingInterval: 25000,   // send ping every 25 seconds
-  transports: ["websocket", "polling"], // allow fallback
+  pingTimeout: 60000,
+  pingInterval: 25000,
+  transports: ["websocket", "polling"],
 });
 
 app.use(cors({ origin: "http://localhost:5173", credentials: true }));
 app.use(express.json());
+
+// Serve static files from uploads directory
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Routes
 app.use("/api/auth", authRoutes);
