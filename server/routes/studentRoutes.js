@@ -9,6 +9,10 @@ import {
 } from "../controllers/student/enrollmentController.js";
 import { getCertificates, downloadCertificate } from "../controllers/student/certificateController.js";
 import { getStudentProgress } from "../controllers/student/progressController.js";
+import {
+    getCourseForLearning,
+    completeLesson
+} from "../controllers/student/courseLearningController.js";
 
 const router = express.Router();
 
@@ -42,5 +46,8 @@ router.get(
 
 // Get student progress
 router.get("/progress", verifyToken, allowRoles("student"), getStudentProgress);
+
+router.get("/course/:id", verifyToken, allowRoles("student"), getCourseForLearning);
+router.post("/lesson/:id/complete", verifyToken, allowRoles("student"), completeLesson);
 
 export default router;

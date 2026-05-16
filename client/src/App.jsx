@@ -35,6 +35,7 @@ import Certificates from "./pages/student/Certificates";
 import Progress from "./pages/student/Progress";
 import StudentMessages from "./pages/student/StudentMessages";
 import StudentSettings from "./pages/student/StudentSettings";
+import CourseLearning from "./pages/student/CourseLearning";
 
 function App() {
   return (
@@ -74,6 +75,14 @@ function App() {
           element={
             <ProtectedRoute roles={["student"]}>
               <MyCourses />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/course/:id"
+          element={
+            <ProtectedRoute roles={["student"]}>
+              <CourseLearning />
             </ProtectedRoute>
           }
         />
@@ -143,7 +152,7 @@ function App() {
               <AdminMessages />
             </ProtectedRoute>
           }
-        /> 
+        />
         <Route
           path="/admin/analytics"
           element={
